@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "380801907097",
+    "project_id": "fewsunsetsapart",
+    "storage_bucket": "fewsunsetsapart.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:380801907097:android:b23c115255e1302f217b08",
+        "android_client_info": {
+          "package_name": "com.heartlink.few_sunsets_apart"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBK9rbhlYMHwM2QG7VHQpXDQBR6NR8SL3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
