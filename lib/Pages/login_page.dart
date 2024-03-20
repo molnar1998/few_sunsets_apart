@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../Auth/email_sign_in.dart';
 import '../Auth/google_sign_in.dart';
 
 class LoginPage extends StatefulWidget {
@@ -9,6 +10,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   Color _getGradientColor() {
     // Calculate gradient colors based on the current time
     final now = DateTime.now();
@@ -26,7 +29,6 @@ class _LoginPageState extends State<LoginPage> {
       return Colors.deepPurple;
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -64,6 +66,7 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 20),
                     TextFormField(
                       decoration: const InputDecoration(
+                        icon: Icon(Icons.email_outlined),
                         labelText: 'Your Heart\'s Email',
                         border: OutlineInputBorder(),
                       ),
@@ -72,28 +75,62 @@ class _LoginPageState extends State<LoginPage> {
                     TextFormField(
                       obscureText: true,
                       decoration: const InputDecoration(
+                        icon: Icon(Icons.vpn_key_outlined),
                         labelText: 'Secret Key to My Heart',
                         border: OutlineInputBorder(),
                       ),
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton.icon(
-                      onPressed: () {
-                        GoogleSignInHelper ().signInWithGoogle();
+                      onPressed: () async {
+                        final email = emailController.text;
+                        final password = passwordController.text;
+                        await EmailPasswordAuth().signIn(context, email, password);
                       },
                       icon: const Icon(Icons.login),
-                      label: const Text('Sign in with Google'),
+                      label: const Text('Sign in'),
                       style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.black, backgroundColor: Colors.red, // Text color
+                        foregroundColor: Colors.black, backgroundColor: Colors.white, // Text color
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
+                    ElevatedButton.icon(
+                      onPressed: () async {
+                        await GoogleSignInHelper ().signInWithGoogle().then((success) {
+                          if (success != null) {
+                            // User is logged in
+                            Navigator.pushReplacementNamed(context, '/home');
+                          } else {
+                            // Handle unsuccessful login
+                            // Show an error message or take appropriate action
+                          }
+                        });
+                      },
+                      icon: const Icon(Icons.login),
+                      label: const Text('Sign in with Google'),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white, backgroundColor: Colors.red, // Text color
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
                     TextButton(
-                      onPressed: () {
-                        // Handle other login methods (e.g., email/password)
+                      onPressed: () async {
+                        final email = emailController.text;
+                        final password = passwordController.text;
+                        await EmailPasswordAuth().signUp(context, email, password).then((success) {
+                          if (success != null) {
+                            // User is logged in
+                            Navigator.pushReplacementNamed(context, '/home');
+                          } else {
+                            // Handle unsuccessful login
+                            // Show an error message or take appropriate action
+                          }
+                        });
                       },
                       style: TextButton.styleFrom(
                         foregroundColor: Colors.white, // Text color

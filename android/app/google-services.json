@@ -12,7 +12,12 @@
           "package_name": "com.heartlink.few_sunsets_apart"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "380801907097-kkov208v9rs1jjhlu4e2mpsvess46j4g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBK9rbhlYMHwM2QG7VHQpXDQBR6NR8SL3Y"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "380801907097-kkov208v9rs1jjhlu4e2mpsvess46j4g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
