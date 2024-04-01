@@ -12,137 +12,131 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  Color _getGradientColor() {
-    // Calculate gradient colors based on the current time
-    final now = DateTime.now();
-    final hour = now.hour;
-
-    // Define your custom color transitions here
-    if (hour >= 6 && hour < 12) {
-      // Morning gradient (e.g., blue to yellow)
-      return Colors.blue;
-    } else if (hour >= 12 && hour < 18) {
-      // Afternoon gradient (e.g., yellow to orange)
-      return Colors.yellow;
-    } else {
-      // Evening gradient (e.g., orange to purple)
-      return Colors.deepPurple;
-    }
-  }
+  final GoogleSignInHelper _googleSignIn = GoogleSignInHelper();
+  bool _showTextFields = false;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Few Sunsets Apart Login'),
-          backgroundColor: _getGradientColor(), // Dynamic color
-        ),
-        body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topRight,
-              end: Alignment.bottomLeft,
-              colors: [_getGradientColor(), Colors.red], // Gradient colors
-            ),
-          ),
-          child: Center(
-            child: Card(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              elevation: 10,
-              color: Colors.white.withOpacity(0.2),
-              surfaceTintColor: Colors.green,
+          appBar: AppBar(
+            toolbarHeight: 200,
+            title: null, // Remove the default title
+            centerTitle: true, // Center the title horizontally
+            backgroundColor: Colors.blue[800], // Make the AppBar transparent
+            elevation: 0, // Remove the shadow
+            flexibleSpace: Align(
+              alignment: Alignment.bottomCenter,
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Unlock Our Journey',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                padding: const EdgeInsets.only(bottom: 0), // Adjust the spacing
+                child: RichText(
+                  text: TextSpan(
+                    children: <TextSpan>[
+                      TextSpan(
+                        text: "24/7",
+                        style: TextStyle(color: Colors.brown[800],fontSize: 72, fontWeight: FontWeight.bold)
                       ),
-                    ),
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.email_outlined),
-                        labelText: 'Your Heart\'s Email',
-                        border: OutlineInputBorder(),
+                      const TextSpan(
+                        text: "",
+                        style: TextStyle(color: Colors.black,fontSize: 72, fontWeight: FontWeight.bold)
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    TextFormField(
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        icon: Icon(Icons.vpn_key_outlined),
-                        labelText: 'Secret Key to My Heart',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        final email = emailController.text;
-                        final password = passwordController.text;
-                        await EmailPasswordAuth().signIn(context, email, password);
-                      },
-                      icon: const Icon(Icons.login),
-                      label: const Text('Sign in'),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.black, backgroundColor: Colors.white, // Text color
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        await GoogleSignInHelper ().signInWithGoogle().then((success) {
-                          if (success != null) {
-                            // User is logged in
-                            Navigator.pushReplacementNamed(context, '/home');
-                          } else {
-                            // Handle unsuccessful login
-                            // Show an error message or take appropriate action
-                          }
-                        });
-                      },
-                      icon: const Icon(Icons.login),
-                      label: const Text('Sign in with Google'),
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white, backgroundColor: Colors.red, // Text color
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () async {
-                        final email = emailController.text;
-                        final password = passwordController.text;
-                        await EmailPasswordAuth().signUp(context, email, password).then((success) {
-                          if (success != null) {
-                            // User is logged in
-                            Navigator.pushReplacementNamed(context, '/home');
-                          } else {
-                            // Handle unsuccessful login
-                            // Show an error message or take appropriate action
-                          }
-                        });
-                      },
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.white, // Text color
-                      ),
-                      child: const Text('Other login options'),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter, // Start color at the top
+              end: Alignment.bottomCenter, // End color at the bottom
+              colors: [
+                Colors.blue.shade800, // Top color
+                Colors.orange.shade800, // Bottom color
+              ],
+            ),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Your company/organization/app name
+                Image.asset("lib/Assets/Images/2.png"),
+                const SizedBox(height: 20),
+                // Email input field
+                Visibility(
+                    visible: _showTextFields,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          decoration: const InputDecoration(
+                            labelText: 'Email',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        // Password input field
+                        TextFormField(
+                          obscureText: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Password',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ],
+                    )
+                ),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(500, 50),
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.brown[800],
+                      textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _showTextFields = !_showTextFields;
+                    });
+                  },
+                  label: Text('Login with Email'.toUpperCase()),
+                  icon: const Icon(Icons.email_outlined),
+                ),
+                const SizedBox(height: 20),
+                // Sign-in button
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(500, 50),
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.red[900],
+                    textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  onPressed: () {
+                    _googleSignIn.signInWithGoogle().then((value) {
+                      if (value != null) {
+                      // If login is successful, navigate to the home page.
+                      Navigator.pushReplacementNamed(context, '/home');
+                      } else {
+                      // Handle unsuccessful login (optional).
+                      }
+                    });
+                  },
+                  icon: const Icon(Icons.email_outlined),
+                  label: Text('Login with Gmail'.toUpperCase()),
+                ),
+                const SizedBox(height: 10),
+                // Other options (e.g., forgot password, social login)
+                TextButton(
+                  onPressed: () {
+
+                  },
+                  child: const Text('Forgot Password?'),
+                ),
+                // Social login buttons (e.g., Facebook, Google)
+                // Add icons and functionality as needed
+              ],
+            ),
+          ),
+        )
       ),
     );
   }

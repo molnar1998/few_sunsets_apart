@@ -35,7 +35,8 @@ class EmailPasswordAuth {
     }
   }
 
-  Future<void> signOut() async {
+  Future<void> signOut(BuildContext context) async {
     await _auth.signOut();
+    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
   }
 }
