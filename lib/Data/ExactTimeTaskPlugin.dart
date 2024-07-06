@@ -1,29 +1,23 @@
+import 'dart:async';
+import 'package:few_sunsets_apart/Data/firebase_service.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
-class MidnightTaskPlugin {
-  static const MethodChannel _channel =
-  MethodChannel('midnight_task_plugin');
+class ExactTimeTaskPlugin {
 
-  static Future<void> scheduleTask() async {
+  static Future<void> resetMissYou(DateTime executionTime) async {
     try {
-      // Calculate the time until midnight
       final now = DateTime.now();
-      final midnight = DateTime(now.year, now.month, now.day + 1, 0, 0, 0);
-      final durationUntilMidnight = midnight.difference(now);
+      final timeUntilExecution = executionTime.isAfter(now)
+          ? executionTime.difference(now)
+          : Duration.zero;
 
-      // Schedule the task
-      await Future.delayed(durationUntilMidnight);
-      await _executeCommand(); // Replace with your actual command execution
-
-      print('Task executed at midnight!');
+      Timer(timeUntilExecution, () async {
+        FirebaseService().resetCounterValues();
+        debugPrint('Task executed at $executionTime');
+      });
     } on PlatformException catch (e) {
-      print('Error scheduling task: ${e.message}');
+      debugPrint('Error scheduling task: ${e.message}');
     }
-  }
-
-  static Future<void> _executeCommand() async {
-    // Implement your command execution logic here
-    // For example, send a notification, update data, etc.
-    print('Executing the command...');
   }
 }

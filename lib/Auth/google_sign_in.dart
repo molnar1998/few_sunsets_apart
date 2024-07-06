@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../Data/user_data.dart';
@@ -7,7 +10,6 @@ import '../Data/user_data.dart';
 class GoogleSignInHelper {
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  String name = "null";
 
   Future<User?> signInWithGoogle() async {
     try {
@@ -16,7 +18,7 @@ class GoogleSignInHelper {
         return null;
       }
       else {
-        UserData.updateName(googleUser.displayName!);
+
       }
 
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
@@ -26,6 +28,9 @@ class GoogleSignInHelper {
       );
 
       final UserCredential authResult = await _auth.signInWithCredential(credential);
+      await _storeUID(authResult.user!.uid);
+      UserData.updateID(authResult.user!.uid);
+      UserData.updateName(googleUser.displayName!);
       return authResult.user;
     } catch (e) {
       if (kDebugMode) {
@@ -34,4 +39,24 @@ class GoogleSignInHelper {
       return null;
     }
   }
+
+  void handleSignOut(BuildContext context) async {
+    try {
+      await _googleSignIn.signOut();
+    }
+    catch (e) {
+      return null;
+    }
+  }
+
+  Future<void> _storeUID(String uid) async {
+    const storage = FlutterSecureStorage();
+    try {
+      await storage.write(key: 'logged_in_uid', value: uid);
+    } on PlatformException catch (e) {
+      // Handle exceptions during storage operation
+      print('Error storing UID: ${e.message}');
+    }
+  }
+
 }
