@@ -1,3 +1,4 @@
+import 'package:few_sunsets_apart/Data/firebase_fcm.dart';
 import 'package:few_sunsets_apart/Data/firebase_service.dart';
 import 'package:few_sunsets_apart/Data/user_data.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -13,7 +14,8 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController _idController = TextEditingController();
-  final FirebaseService firebaseService = FirebaseService();
+  final FirebaseFCM _fcm = FirebaseFCM();
+  final FirebaseService _firebaseService = FirebaseService();
   final id = UserData.id;
   final myLoveID = UserData.myLoveID;
 
@@ -56,7 +58,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 // Check permission
                 final permissionStatus = await Permission.notification.request();
                 if (permissionStatus.isGranted) {
-                  await firebaseService.sendLoveRequest(_idController.text);
+                  await _fcm.sendRequest(_idController.text);
                 } else {
                   // Handle permission denied case (optional)
                   print('Notification permission denied');

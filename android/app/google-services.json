@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "380801907097-iahmii0toch282vhhpkru0r0rdkp36k6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.heartlink.few_sunsets_apart",
+            "certificate_hash": "e79b253d77a31311b75d0689d4969e585206c932"
+          }
+        },
+        {
           "client_id": "380801907097-kkov208v9rs1jjhlu4e2mpsvess46j4g.apps.googleusercontent.com",
           "client_type": 3
         }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../Auth/email_sign_in.dart';
 import '../Auth/google_sign_in.dart';
 import '../Data/counter.dart';
 import '../Data/firebase_servicev2.dart';
@@ -21,44 +20,51 @@ class HomePageState extends State<HomePage> {
   Counter counter = Counter();
   var myLoveMissMe = 0;
   var myLoveName = "";
-  FirebaseDataFetcher fetcher = FirebaseDataFetcher();
+  final FirebaseDataFetcher _dataFetcher = FirebaseDataFetcher();
   final GoogleSignInHelper _googleSignIn = GoogleSignInHelper();
 
   @override
   Widget build(BuildContext context) {
     var now = DateTime.now();
-    EmailPasswordAuth emailSignIn = EmailPasswordAuth();
     var displayName = UserData.name;
     var formattedDate = DateFormat('MMMM dd, yyyy').format(now);
     counter.initCounter();
     int c = counter.getCounter();
 
-    fetcher.retrieveData(UserData.id, 'my_love_ID').then((value) {
-      if (value != null) {
-        print('myLoveID: $value');
-        UserData.updateMyLoveID(value);
-      } else {
-        print('myLoveID not found.');
-      }
-    });
-    fetcher.retrieveData(UserData.myLoveID, 'my_name').then((value) {
-      if (value != null) {
-        print('First Name: $value');
-        UserData.updateMyLoveName(value);
-      } else {
-        print('First name not found.');
-      }
-    });
-    fetcher.retrieveData(UserData.myLoveID, 'miss_you').then((value) {
-      if (value != null) {
-        print('First Name: $value');
-        UserData.updateMyLoveMissMe(value);
-      } else {
-        print('First name not found.');
-      }
-    });
-    myLoveName = UserData.myLoveName;
-    myLoveMissMe = UserData.myLoveMissMe;
+    if(UserData.loveCheck == true){
+      _dataFetcher.retrieveData(UserData.id, 'partner_id').then((value) {
+        if (value != null) {
+          print('myLoveID: $value');
+          UserData.updateMyLoveID(value);
+          _dataFetcher.retrieveData(UserData.myLoveID, 'user_name').then((value) {
+            if (value != null) {
+              print('First Name: $value');
+              UserData.updateMyLoveName(value);
+            } else {
+              print('First name not found.');
+            }
+          });
+          _dataFetcher.retrieveData(UserData.myLoveID, 'miss_counter').then((value) {
+            if (value != null) {
+              print('First Name: $value');
+              UserData.updateMyLoveMissMe(value);
+            } else {
+              print('First name not found.');
+            }
+          });
+        } else {
+          print('myLoveID not found.');
+          UserData.updateLoveCheck(false);
+        }
+      });
+      myLoveName = UserData.myLoveName;
+      myLoveMissMe = UserData.myLoveMissMe;
+      _dataFetcher.retrieveData(UserData.id, "mood_pic").then((value) {
+        setState(() {
+          UserData.updateMoodPic(value);
+        });
+      });
+    }
 
     return Scaffold(
       backgroundColor: Colors.white, // Set your desired background color
@@ -159,10 +165,10 @@ class HomePageState extends State<HomePage> {
                     Navigator.pushReplacementNamed(context, '/emotion');
                   },
                   heroTag: "btn3",
-                  child: const Column(
+                  child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.emoji_emotions_outlined,size: 100,),
+                      Image.asset(UserData.moodPic),
                       SizedBox(height: 4), // Adjust the spacing as needed
                       Text('Emotion'),
                     ],

@@ -4,8 +4,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../Data/firebase_servicev2.dart';
+import '../Data/user_data.dart';
+
 class EmailPasswordAuth {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseDataFetcher _dataFetcher = FirebaseDataFetcher();
 
   Future<UserCredential?> signInWithEmailAndPassword(String email, String password) async {
     try {
@@ -15,7 +19,9 @@ class EmailPasswordAuth {
       );
       final user = userCredential.user;
       if (user != null) {
-        await _storeUID(user.uid); // Store UID in secure storage
+        await _storeUID(user.uid);// Store UID in secure storage
+        UserData.updateID(user.uid);
+        UserData.updateName(user.displayName!);
       }
       return userCredential;
     } on FirebaseAuthException catch (e) {
@@ -30,10 +36,30 @@ class EmailPasswordAuth {
         email: email,
         password: password,
       );
+      final user = userCredential.user;
+      if(user != null){
+        await _storeUID(user.uid);
+        user.updateDisplayName(UserData.name);
+        _dataFetcher.saveData(user.uid, "user_name", UserData.name);
+        UserData.updateID(user.uid);
+      }
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
       if (kDebugMode) {
         print(e.message);
+        showDialog<String>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('Something went wrong!'),
+            content: Text(e.code),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'Cancel'),
+                child: const Text('Cancel'),
+              ),
+            ],
+          )
+        );
       } // Handle error accordingly
       return null;
     }

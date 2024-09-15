@@ -51,7 +51,7 @@ class FirebaseDataFetcher {
     final dataToSave = {field: value}; // Create a Map with the field and value
 
     // Set data in the document
-    await docRef.set(dataToSave);
+    await docRef.set(dataToSave, SetOptions(merge: true));
 
     print('Saved data: userId: $userId, field: $field, value: $value');
   }

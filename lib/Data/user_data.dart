@@ -5,16 +5,17 @@ class UserData {
   static String name = '';
   static String myLoveName = '';
   static String mood = "Happy";
+  static String moodPic = "lib/Assets/Emotions/Happy.png";
   static String myLoveID = '';
   static String id = "";
   static int myLoveMissMe = 0;
+  static bool loveCheck = true;
 
   // Setter method to update the user's name
   static void updateName(String newName) {
-    FirebaseService firebaseService = FirebaseService();
     name = newName;
-    firebaseService.saveData('my_name', newName);
   }
+
   static void updateMood(String newMood) {
     mood = newMood;
   }
@@ -34,6 +35,14 @@ class UserData {
     myLoveMissMe = missMe;
   }
 
+  static void updateLoveCheck(bool check) {
+    loveCheck = check;
+  }
+
+  static void updateMoodPic(String newMoodPic){
+    moodPic = newMoodPic;
+  }
+
   static void clearData(){
     name = '';
     myLoveName = '';
@@ -41,6 +50,8 @@ class UserData {
     myLoveID = '';
     id = "";
     myLoveMissMe = 0;
+    loveCheck = true;
+    moodPic = "lib/Assets/Emotions/Happy.png";
   }
 
 }

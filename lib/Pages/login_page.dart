@@ -97,6 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ],
                       )),
+                  const SizedBox(height: 10),
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       minimumSize: const Size(500, 50),
@@ -111,11 +112,13 @@ class _LoginPageState extends State<LoginPage> {
                           _showTextFields = !_showTextFields;
                         });
                       } else {
-                        final String email =
-                            _emailController.text; // Get email text
-                        final String password =
-                            _passwordController.text; // Get password text
-                        _emailPasswordAuth.signInWithEmailAndPassword(email, password);
+                        _emailPasswordAuth.signInWithEmailAndPassword(_emailController.text, _passwordController.text).then((value) {
+                          if(value != null){
+                            Navigator.pushReplacementNamed(context, '/home');
+                          } else{
+
+                          }
+                        });
                       }
                     },
                     label: Text('Login with Email'.toUpperCase()),
@@ -144,6 +147,21 @@ class _LoginPageState extends State<LoginPage> {
                     },
                     icon: const Icon(Icons.email_outlined),
                     label: Text('Login with Gmail'.toUpperCase()),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(500, 50),
+                      foregroundColor: Colors.red[900],
+                      backgroundColor: Colors.white,
+                      textStyle: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(context, '/signUp');
+                    },
+                    icon: const Icon(Icons.account_circle),
+                    label: Text('Sign Up'.toUpperCase()),
                   ),
                   const SizedBox(height: 10),
                   // Other options (e.g., forgot password, social login)
