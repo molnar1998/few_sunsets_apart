@@ -32,6 +32,7 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+/lib/Assets/fewsunsetsapart-47d253220c56.json
 
 # Symbolication related
 app.*.symbols
