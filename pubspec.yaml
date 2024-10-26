@@ -37,6 +37,8 @@ dependencies:
   cupertino_icons:
   firebase_auth:
   http:
+  googleapis:
+  googleapis_auth:
   google_sign_in:
   firebase_core:
   firebase_messaging: ^15.1.1

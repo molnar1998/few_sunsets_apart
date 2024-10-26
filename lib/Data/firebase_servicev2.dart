@@ -3,19 +3,24 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class FirebaseDataFetcher {
   final CollectionReference users = FirebaseFirestore.instance.collection('users');
 
-  Future<dynamic> retrieveUser(String userID) async {
-    // Fetches the document with the given userID from the users collection.
-    DocumentSnapshot doc = await users.doc(userID).get();
+  Future<dynamic> retrieveUser(String username) async {
+    try {
+      // Query the collection to find the document with the desired username
+      final querySnapshot = await users.where('user_name', isEqualTo: username).get();
 
-    // Verifies if the document was found.
-    if (doc.exists) {
-      // Casts the document data to a Map<String, dynamic> for easier access.
-      Map<String, dynamic>? data = doc.data() as Map<String, dynamic>?;
-      return data;
-    } else {
-      // If the document with userID does not exist, it prints a message and returns null.
-      print('Document with ID: $userID does not exist.');
-      return null;
+      // Check if the query returned any results
+      if (querySnapshot.docs.isNotEmpty) {
+        // Extract the username from the first document
+        final idToken = querySnapshot.docs.first['id_token'];
+        return idToken;
+      } else {
+        // Handle the case where no user with the given username was found
+        throw Exception('User with username "$username" not found.');
+      }
+    } catch (e) {
+      // Handle any errors that might occur during the query
+      print('Error fetching username: $e');
+      rethrow; // Re-throw the exception for handling in the calling code
     }
   }
 
@@ -54,5 +59,59 @@ class FirebaseDataFetcher {
     await docRef.set(dataToSave, SetOptions(merge: true));
 
     print('Saved data: userId: $userId, field: $field, value: $value');
+  }
+
+  Future<void> saveFriend(String userId, String newFriendId) async {
+    users
+        .doc(userId)
+        .collection('friends')
+        .add({
+      'friendId': newFriendId,
+      'timestamp': FieldValue.serverTimestamp(),
+      // Any additional metadata
+    });
+    print('Saved data: userId: $userId, friend: $newFriendId');
+  }
+
+  Future<void> saveRequest(String userId, dynamic friendId) async {
+    users
+        .doc(userId)
+        .update({
+      'request': FieldValue.arrayUnion([friendId])
+    });
+    print('Saved data: userId: $userId, request: $friendId');
+  }
+
+  Future<void> deleteData(String userId, String data) async {
+    users
+        .doc('userId')
+        .update({
+      data: FieldValue.delete(),
+    });
+    print('Delete data: userId: $userId, field: $data');
+  }
+
+  Future<void> deleteFriend(String userId, String friendId) async {
+
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('friends')
+        .where('friendId', isEqualTo: friendId)
+        .get();
+
+    for (var doc in querySnapshot.docs) {
+      await doc.reference.delete();
+    }
+    print('Delete data: userId: $userId, friend: $friendId');
+  }
+
+  Future<void> deleteRequest(String userId, dynamic friendId) async {
+    users
+        .doc(userId)
+        .update({
+      'request': FieldValue.arrayRemove([friendId])
+    });
+    print('Delete data: userId: $userId, request: $friendId');
   }
 }

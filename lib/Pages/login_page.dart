@@ -1,4 +1,5 @@
 import 'package:few_sunsets_apart/Data/counter.dart';
+import 'package:few_sunsets_apart/Data/firebase_service.dart';
 import 'package:few_sunsets_apart/Data/user_data.dart';
 import 'package:flutter/material.dart';
 import '../Auth/email_sign_in.dart';
@@ -22,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
     return MaterialApp(
       home: Scaffold(
           appBar: AppBar(
-            toolbarHeight: 200,
+            toolbarHeight: 100,
             title: null, // Remove the default title
             centerTitle: true, // Center the title horizontally
             backgroundColor: Colors.blue[800], // Make the AppBar transparent
@@ -115,6 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                         _emailPasswordAuth.signInWithEmailAndPassword(_emailController.text, _passwordController.text).then((value) {
                           if(value != null){
                             Navigator.pushReplacementNamed(context, '/home');
+                            FirebaseService().loadData();
                           } else{
 
                           }

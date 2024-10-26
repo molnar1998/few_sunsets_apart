@@ -10,6 +10,7 @@ class UserData {
   static String id = "";
   static int myLoveMissMe = 0;
   static bool loveCheck = true;
+  static var requests = [];
 
   // Setter method to update the user's name
   static void updateName(String newName) {
@@ -43,6 +44,10 @@ class UserData {
     moodPic = newMoodPic;
   }
 
+  static void updateRequests(var newRequests){
+    requests = newRequests;
+  }
+
   static void clearData(){
     name = '';
     myLoveName = '';
@@ -52,6 +57,7 @@ class UserData {
     myLoveMissMe = 0;
     loveCheck = true;
     moodPic = "lib/Assets/Emotions/Happy.png";
+    requests = [];
   }
 
 }
