@@ -1,4 +1,3 @@
-import 'package:few_sunsets_apart/Data/firebase_service.dart';
 
 
 class UserData {
@@ -11,6 +10,7 @@ class UserData {
   static int myLoveMissMe = 0;
   static bool loveCheck = true;
   static var requests = [];
+  static int counter = 0;
 
   // Setter method to update the user's name
   static void updateName(String newName) {
@@ -48,6 +48,14 @@ class UserData {
     requests = newRequests;
   }
 
+  static void updateCounter(var newValue){
+    counter = newValue;
+  }
+
+  static void incrementCounter() {
+    counter++;
+  }
+
   static void clearData(){
     name = '';
     myLoveName = '';
@@ -58,6 +66,7 @@ class UserData {
     loveCheck = true;
     moodPic = "lib/Assets/Emotions/Happy.png";
     requests = [];
+    counter = 0;
   }
 
 }

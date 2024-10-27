@@ -2,11 +2,12 @@ import 'package:few_sunsets_apart/Data/firebase_messaging_service.dart';
 import 'package:few_sunsets_apart/Pages/add_memory_page.dart';
 import 'package:few_sunsets_apart/Pages/calendar_page.dart';
 import 'package:few_sunsets_apart/Pages/emotion_page.dart';
+import 'package:few_sunsets_apart/Pages/loading_page.dart';
 import 'package:few_sunsets_apart/Pages/memory_page.dart';
 import 'package:few_sunsets_apart/Pages/sign_up_page.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'Pages/home_page.dart';
@@ -23,7 +24,6 @@ void main() async {
   );
   await dotenv.load();
   FirebaseMessagingService().initialize();
-  //ExactTimeTaskPlugin.resetMissYou(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, 0, 0, 0, 0, 0,));
   runApp(const MyApp());
 }
 
@@ -33,8 +33,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //Check if the user is logged in
+    final User? user = FirebaseAuth.instance.currentUser;
+    String initialRoute = user != null ? '/loading' : '/login';
+
     return MaterialApp(
-      initialRoute: '/login', // Set the initial route
+      navigatorKey: navigatorKey,
+      initialRoute: initialRoute, // Set the initial route
       routes: {
         '/login': (context) => const LoginPage(),
         '/home': (context) => const HomePage(),
@@ -46,6 +51,7 @@ class MyApp extends StatelessWidget {
         '/memories' : (context) => const MemoriesPage(),
         '/addMemory' : (context) => const AddMemoryPage(),
         '/signUp' : (context) => const SignUpPage(),
+        '/loading' : (context) => const LoadingPage(homePage: HomePage()),
       },
     );
   }

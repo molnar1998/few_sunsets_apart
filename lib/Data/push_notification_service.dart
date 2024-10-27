@@ -1,12 +1,10 @@
 import 'dart:convert';
 
 import 'package:few_sunsets_apart/Data/user_data.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:googleapis_auth/auth_io.dart' as auth;
-import 'package:googleapis/servicecontrol/v1.dart' as servicecontrol;
 
 class PushNotificationService
 {

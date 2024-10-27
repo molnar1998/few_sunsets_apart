@@ -1,5 +1,3 @@
-import 'package:few_sunsets_apart/Data/counter.dart';
-import 'package:few_sunsets_apart/Data/firebase_service.dart';
 import 'package:few_sunsets_apart/Data/user_data.dart';
 import 'package:flutter/material.dart';
 import '../Auth/email_sign_in.dart';
@@ -115,8 +113,7 @@ class _LoginPageState extends State<LoginPage> {
                       } else {
                         _emailPasswordAuth.signInWithEmailAndPassword(_emailController.text, _passwordController.text).then((value) {
                           if(value != null){
-                            Navigator.pushReplacementNamed(context, '/home');
-                            FirebaseService().loadData();
+                            Navigator.pushReplacementNamed(context, '/loading');
                           } else{
 
                           }
@@ -139,12 +136,8 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: () {
                       UserData.clearData();
                       _googleSignIn.signInWithGoogle().then((value) {
-                        if (value != null) {
-                          // If login is successful, navigate to the home page.
-                          Navigator.pushReplacementNamed(context, '/home');
-                        } else {
-                          // Handle unsuccessful login (optional).
-                        }
+                        // If login is successful, navigate to the home page.
+                        Navigator.pushReplacementNamed(context, '/home');
                       });
                     },
                     icon: const Icon(Icons.email_outlined),

@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class FirebaseDataFetcher {
   final CollectionReference users = FirebaseFirestore.instance.collection('users');
 
-  Future<dynamic> retrieveUser(String username) async {
+  Future<dynamic> retrieveUserId(String username) async {
     try {
       // Query the collection to find the document with the desired username
       final querySnapshot = await users.where('user_name', isEqualTo: username).get();
@@ -11,8 +11,29 @@ class FirebaseDataFetcher {
       // Check if the query returned any results
       if (querySnapshot.docs.isNotEmpty) {
         // Extract the username from the first document
-        final idToken = querySnapshot.docs.first['id_token'];
-        return idToken;
+        final userDoc = querySnapshot.docs.first;
+        return userDoc.id;
+      } else {
+        // Handle the case where no user with the given username was found
+        throw Exception('User with username "$username" not found.');
+      }
+    } catch (e) {
+      // Handle any errors that might occur during the query
+      print('Error fetching username: $e');
+      rethrow; // Re-throw the exception for handling in the calling code
+    }
+  }
+
+  Future<dynamic> retrieveDataByUserName(String username, String field) async {
+    try {
+      // Query the collection to find the document with the desired username
+      final querySnapshot = await users.where('user_name', isEqualTo: username).get();
+
+      // Check if the query returned any results
+      if (querySnapshot.docs.isNotEmpty) {
+        // Extract the username from the first document
+        final data = querySnapshot.docs.first[field];
+        return data;
       } else {
         // Handle the case where no user with the given username was found
         throw Exception('User with username "$username" not found.');
@@ -73,13 +94,13 @@ class FirebaseDataFetcher {
     print('Saved data: userId: $userId, friend: $newFriendId');
   }
 
-  Future<void> saveRequest(String userId, dynamic friendId) async {
+  Future<void> saveRequest(String userId, dynamic friendName) async {
     users
         .doc(userId)
         .update({
-      'request': FieldValue.arrayUnion([friendId])
+      'request': FieldValue.arrayUnion([friendName])
     });
-    print('Saved data: userId: $userId, request: $friendId');
+    print('Saved data: userId: $userId, request: $friendName');
   }
 
   Future<void> deleteData(String userId, String data) async {

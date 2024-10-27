@@ -24,40 +24,6 @@ class FirebaseService {
     });
   }
 
-  Future<void> sendRequest(String loveID) async {
-    // ... (same code for topic and notification data)
-
-    // Prepare the FCM message URL
-    final url = Uri.parse('https://fcm.googleapis.com/v1/projects/fewsunsetsapart/messages:send');
-
-    final serverKey = dotenv.env['FCM_SERVER_KEY'] ?? '';
-
-    // Prepare the request headers (including server key)
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': "Bearer $serverKey", // Replace with your Firebase server key
-    };
-
-    // Prepare the FCM message body
-    final messageBody = {
-      'data': {
-        'title': 'Love Request!', // Notification title (optional)
-        'body': '${UserData.id} wants to be your love!', // Notification message
-        'requestingUserID': UserData.id, // Include requesting user ID for love ID user's app
-      },
-      'to': loveID, // Replace with topic or love ID device token (depending on your approach)
-    };
-
-    // Send the FCM message using HTTP POST request
-    final response = await http.post(url, headers: headers, body: jsonEncode(messageBody));
-
-    if (response.statusCode == 200) {
-      print('Love request sent to: $loveID');
-    } else {
-      print('Error sending love request: ${response.statusCode}');
-    }
-  }
-
   Future<void> loadData() async {
     UserData.updateRequests(await _dataFetcher.retrieveData(UserData.id, 'request'));
     //TODO Make all data loading in the same time!

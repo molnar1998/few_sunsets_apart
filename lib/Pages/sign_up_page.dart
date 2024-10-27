@@ -1,5 +1,4 @@
 import 'package:few_sunsets_apart/Auth/email_sign_in.dart';
-import 'package:few_sunsets_apart/Data/firebase_servicev2.dart';
 import 'package:few_sunsets_apart/Data/user_data.dart';
 import 'package:flutter/material.dart';
 

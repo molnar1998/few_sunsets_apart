@@ -23,6 +23,7 @@ class HomePageState extends State<HomePage> {
   var myLoveName = "";
   final FirebaseDataFetcher _dataFetcher = FirebaseDataFetcher();
   final GoogleSignInHelper _googleSignIn = GoogleSignInHelper();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -90,8 +91,8 @@ class HomePageState extends State<HomePage> {
                 Navigator.pushReplacementNamed(context, '/profile');
               } else if (value == 'logout') {
                 UserData.clearData();
-                Counter().deleteCounter();
                 _googleSignIn.handleSignOut(context);
+                _auth.signOut();
                 Navigator.pushReplacementNamed(context, '/login');
               }
             },
@@ -179,8 +180,10 @@ class HomePageState extends State<HomePage> {
                   backgroundColor: Colors.white,
                   onPressed: () {
                     setState(() {
-                      counter.incrementCounter();
-                      c = counter.getCounter();
+                      UserData.incrementCounter();
+                      //counter.incrementCounter();
+                      //c = counter.getCounter();
+                      c = UserData.counter;
                       debugPrint("Pressed!");
                     });
                   },

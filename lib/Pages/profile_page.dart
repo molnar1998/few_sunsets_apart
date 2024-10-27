@@ -24,7 +24,7 @@ class _ProfilePageState extends State<ProfilePage> {
   late final FirebaseMessaging messaging;
 
   @override
-  void initState() {
+  initState() {
     super.initState();
     messaging = FirebaseMessaging.instance;
     messaging.requestPermission();
@@ -57,11 +57,13 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           ElevatedButton(
               onPressed: () async {
-                final token = await _dataFetcher.retrieveUser(_usernameController.text);
+                final token = await _dataFetcher.retrieveDataByUserName(_usernameController.text,'id_token');
+                final uid = await _dataFetcher.retrieveUserId(_usernameController.text);
                 // Check permission
                 final permissionStatus = await Permission.notification.request();
                 if (permissionStatus.isGranted) {
                   await PushNotificationService.sendNotificationToSelectedPartner(token, context, UserData.name, 'request');
+                  await _dataFetcher.saveRequest(uid, UserData.name);
                 } else {
                   // Handle permission denied case (optional)
                   print('Notification permission denied');

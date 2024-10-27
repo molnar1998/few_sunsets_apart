@@ -76,7 +76,9 @@ class EmailPasswordAuth {
       await storage.write(key: 'logged_in_uid', value: uid);
     } on PlatformException catch (e) {
       // Handle exceptions during storage operation
-      print('Error storing UID: ${e.message}');
+      if (kDebugMode) {
+        print('Error storing UID: ${e.message}');
+      }
     }
   }
 

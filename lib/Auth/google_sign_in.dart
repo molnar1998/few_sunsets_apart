@@ -13,33 +13,21 @@ class GoogleSignInHelper {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseDataFetcher _dataFetcher = FirebaseDataFetcher();
 
-  Future<User?> signInWithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) {
-        return null;
-      }
-      else {
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-      }
+    //Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
+    //Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
 
-      final UserCredential authResult = await _auth.signInWithCredential(credential);
-      await _storeUID(authResult.user!.uid);
-      UserData.updateID(authResult.user!.uid);
-      _dataFetcher.saveData(authResult.user!.uid, "user_name", googleUser.displayName);
-      return authResult.user;
-    } catch (e) {
-      if (kDebugMode) {
-        print('Google sign-in error: $e');
-      }
-      return null;
-    }
+    //Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
   void handleSignOut(BuildContext context) async {
@@ -57,7 +45,9 @@ class GoogleSignInHelper {
       await storage.write(key: 'logged_in_uid', value: uid);
     } on PlatformException catch (e) {
       // Handle exceptions during storage operation
-      print('Error storing UID: ${e.message}');
+      if (kDebugMode) {
+        print('Error storing UID: ${e.message}');
+      }
     }
   }
 
