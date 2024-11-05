@@ -1,7 +1,9 @@
 import 'package:few_sunsets_apart/Data/firebase_servicev2.dart';
+import 'package:few_sunsets_apart/Data/page_control.dart';
 import 'package:few_sunsets_apart/Data/push_notification_service.dart';
 import 'package:few_sunsets_apart/Data/firebase_service.dart';
 import 'package:few_sunsets_apart/Data/user_data.dart';
+import 'package:few_sunsets_apart/Widgets/friend_card.dart';
 import 'package:few_sunsets_apart/Widgets/request_card.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -57,7 +59,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           ElevatedButton(
               onPressed: () async {
-                final token = await _dataFetcher.retrieveDataByUserName(_usernameController.text,'id_token');
+                final token = await _dataFetcher.retrieveDataByUserName(_usernameController.text, 'id_token');
                 final uid = await _dataFetcher.retrieveUserId(_usernameController.text);
                 // Check permission
                 final permissionStatus = await Permission.notification.request();
@@ -69,8 +71,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   print('Notification permission denied');
                 }
               },
-              child: const Text("Add your love!")
-          ),
+              child: const Text("Add your love!")),
           ElevatedButton(
             onPressed: () async {
               final fcmToken = await FirebaseMessaging.instance.getToken();
@@ -90,18 +91,34 @@ class _ProfilePageState extends State<ProfilePage> {
                     await _dataFetcher.saveFriend(UserData.id, UserData.requests[index]);
                     await _dataFetcher.deleteRequest(UserData.id, UserData.requests[index]);
                     await FirebaseService().loadData();
-                    setState(() {
-                    });
+                    setState(() {});
                   },
                   onDecline: () async {
                     await _dataFetcher.deleteRequest(UserData.id, UserData.requests[index]);
                     await FirebaseService().loadData();
-                    setState(() {
-                    });
+                    setState(() {});
                   },
                 );
               },
             ),
+          ),
+          const Text('Your Friends'),
+          Expanded(
+            child: ListView.builder(
+                itemCount: UserData.friends.length,
+                itemBuilder: (context, index) {
+                  final friendName = UserData.friends[index];
+                  return FriendCard(
+                      friendName: friendName,
+                      onSendMessage: () async {
+                        Navigator.pushReplacementNamed(context, '/message');
+                        PageControl.updatePage('/message');
+                      },
+                      onDeleteFriend: () async {
+
+                      },
+                  );
+                }),
           ),
         ],
       ),

@@ -1,12 +1,9 @@
 // firebase_service.dart
 
-import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:few_sunsets_apart/Data/firebase_servicev2.dart';
 import 'package:few_sunsets_apart/Data/user_data.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
 
 class FirebaseService {
   CollectionReference usersCollections =
@@ -26,6 +23,7 @@ class FirebaseService {
 
   Future<void> loadData() async {
     UserData.updateRequests(await _dataFetcher.retrieveData(UserData.id, 'request'));
+    UserData.updateFriends(await _dataFetcher.retrieveFriends(UserData.id));
     //TODO Make all data loading in the same time!
   }
 }

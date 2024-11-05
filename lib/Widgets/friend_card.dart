@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-class RequestCard extends StatelessWidget {
-  final String senderName;
-  final VoidCallback onAccept;
-  final VoidCallback onDecline;
+class FriendCard extends StatelessWidget {
+  final String friendName;
+  final VoidCallback onSendMessage;
+  final VoidCallback onDeleteFriend;
 
-  const RequestCard({
+  const FriendCard({
     super.key,
-    required this.senderName,
-    required this.onAccept,
-    required this.onDecline,
+    required this.friendName,
+    required this.onSendMessage,
+    required this.onDeleteFriend,
   });
 
   @override
@@ -21,12 +21,12 @@ class RequestCard extends StatelessWidget {
       elevation: 5,
       margin: const EdgeInsets.all(10),
       child: Padding(
-        padding: const EdgeInsets.all(15),
+          padding: const EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Request from $senderName',
+              friendName,
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
@@ -34,19 +34,19 @@ class RequestCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 ElevatedButton(
-                  onPressed: onAccept,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                  ),
-                  child: const Text('Accept'),
+                    onPressed: onSendMessage,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                    ),
+                    child: const Text('Message'),
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton(
-                  onPressed: onDecline,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                  ),
-                  child: const Text('Decline'),
+                    onPressed: onDeleteFriend,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
+                    child: const Text('Delete'),
                 ),
               ],
             ),
@@ -55,4 +55,5 @@ class RequestCard extends StatelessWidget {
       ),
     );
   }
+
 }

@@ -94,6 +94,21 @@ class FirebaseDataFetcher {
     print('Saved data: userId: $userId, friend: $newFriendId');
   }
 
+  Future<dynamic> retrieveFriends(String userId) async {
+
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('friends')
+        .get();
+    if(querySnapshot.size > 0){
+      return querySnapshot.docs;
+    } else{
+      print("$userId don't have any friends :c");
+      return null;
+    }
+  }
+
   Future<void> saveRequest(String userId, dynamic friendName) async {
     users
         .doc(userId)

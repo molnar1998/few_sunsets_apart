@@ -10,6 +10,7 @@ class UserData {
   static int myLoveMissMe = 0;
   static bool loveCheck = true;
   static var requests = [];
+  static var friends = [];
   static int counter = 0;
 
   // Setter method to update the user's name
@@ -48,6 +49,16 @@ class UserData {
     requests = newRequests;
   }
 
+  static void updateFriends(var newFriends){
+    if(newFriends != null) {
+      for(var friend in newFriends){
+        if(!friends.contains(friend['friendId'])){
+          friends.add(friend['friendId']);
+        }
+      }
+    }
+  }
+
   static void updateCounter(var newValue){
     counter = newValue;
   }
@@ -66,6 +77,7 @@ class UserData {
     loveCheck = true;
     moodPic = "lib/Assets/Emotions/Happy.png";
     requests = [];
+    friends = [];
     counter = 0;
   }
 

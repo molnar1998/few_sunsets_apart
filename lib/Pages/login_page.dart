@@ -1,5 +1,6 @@
 import 'package:few_sunsets_apart/Data/user_data.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../Auth/email_sign_in.dart';
 import '../Auth/google_sign_in.dart';
 
@@ -16,6 +17,15 @@ class _LoginPageState extends State<LoginPage> {
   final GoogleSignInHelper _googleSignIn = GoogleSignInHelper();
   final EmailPasswordAuth _emailPasswordAuth = EmailPasswordAuth();
   bool _showTextFields = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _googleSignIn.canAccess();
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -67,8 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Your company/organization/app name
-                  Visibility(
-                      visible: !_showTextFields,
+                  Expanded(
                       child: Image.asset("lib/Assets/Images/2.png")
                   ),
                   const SizedBox(height: 20),
@@ -137,7 +146,7 @@ class _LoginPageState extends State<LoginPage> {
                       UserData.clearData();
                       _googleSignIn.signInWithGoogle().then((value) {
                         // If login is successful, navigate to the home page.
-                        Navigator.pushReplacementNamed(context, '/home');
+                        //Navigator.pushReplacementNamed(context, '/loading');
                       });
                     },
                     icon: const Icon(Icons.email_outlined),

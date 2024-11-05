@@ -123,85 +123,87 @@ class HomePageState extends State<HomePage> {
         child: Column(
           children: [
             const SizedBox(height: 20,),
-            GridView.count(
-              crossAxisCount: 2,
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
-              childAspectRatio: 1,
-              shrinkWrap: true,
-              padding: const EdgeInsets.all(8),
-              children: [
-                FloatingActionButton(
-                  backgroundColor: Colors.white,
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/memories');
-                  },
-                  heroTag: "btn1",
-                  child: const Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.photo_size_select_actual_outlined,size: 100,),
-                      SizedBox(height: 4), // Adjust the spacing as needed
-                      Text('Memories'),
-                    ],
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 2,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+                childAspectRatio: 1,
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(8),
+                children: [
+                  FloatingActionButton(
+                    backgroundColor: Colors.white,
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(context, '/memories');
+                    },
+                    heroTag: "btn1",
+                    child: const Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.photo_size_select_actual_outlined,size: 100,),
+                        SizedBox(height: 4), // Adjust the spacing as needed
+                        Text('Memories'),
+                      ],
+                    ),
                   ),
-                ),
-                FloatingActionButton(
-                  backgroundColor: Colors.white,
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/calendar');
-                  },
-                  heroTag: "btn2",
-                  child: const Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.calendar_month,size: 100,),
-                      SizedBox(height: 4), // Adjust the spacing as needed
-                      Text('Calendar'),
-                    ],
+                  FloatingActionButton(
+                    backgroundColor: Colors.white,
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(context, '/calendar');
+                    },
+                    heroTag: "btn2",
+                    child: const Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.calendar_month,size: 100,),
+                        SizedBox(height: 4), // Adjust the spacing as needed
+                        Text('Calendar'),
+                      ],
+                    ),
                   ),
-                ),
-                FloatingActionButton(
-                  backgroundColor: Colors.white,
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/emotion');
-                  },
-                  heroTag: "btn3",
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Image.asset(UserData.moodPic),
-                      SizedBox(height: 4), // Adjust the spacing as needed
-                      Text('Emotion'),
-                    ],
+                  FloatingActionButton(
+                    backgroundColor: Colors.white,
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(context, '/emotion');
+                    },
+                    heroTag: "btn3",
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(UserData.moodPic),
+                        SizedBox(height: 4), // Adjust the spacing as needed
+                        Text('Emotion'),
+                      ],
+                    ),
                   ),
-                ),
-                FloatingActionButton(
-                  backgroundColor: Colors.white,
-                  onPressed: () {
-                    setState(() {
-                      UserData.incrementCounter();
-                      //counter.incrementCounter();
-                      //c = counter.getCounter();
-                      c = UserData.counter;
-                      debugPrint("Pressed!");
-                    });
-                  },
-                  heroTag: "btn4",
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text('$myLoveName miss me $myLoveMissMe times :3', textAlign: TextAlign.center,style: const TextStyle(fontWeight: FontWeight.bold),),
-                      ),
-                      const Icon(Icons.favorite,size: 100,),
-                      const SizedBox(height: 4), // Adjust the spacing as needed
-                      Text('I miss you $c'),
-                    ],
+                  FloatingActionButton(
+                    backgroundColor: Colors.white,
+                    onPressed: () {
+                      setState(() {
+                        UserData.incrementCounter();
+                        //counter.incrementCounter();
+                        //c = counter.getCounter();
+                        c = UserData.counter;
+                        debugPrint("Pressed!");
+                      });
+                    },
+                    heroTag: "btn4",
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text('$myLoveName miss me $myLoveMissMe times :3', textAlign: TextAlign.center,style: const TextStyle(fontWeight: FontWeight.bold),),
+                        ),
+                        const Icon(Icons.favorite,size: 100,),
+                        const SizedBox(height: 4), // Adjust the spacing as needed
+                        Text('I miss you $c'),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),

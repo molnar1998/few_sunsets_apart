@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:few_sunsets_apart/Data/firebase_servicev2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,34 +11,47 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../Data/user_data.dart';
 
 class GoogleSignInHelper {
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseDataFetcher _dataFetcher = FirebaseDataFetcher();
+  GoogleSignInAccount? googleUser;
 
-  Future<UserCredential> signInWithGoogle() async {
-    // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+  static const List<String> scopes = <String>[
+    'email',
+    'https://www.googleapis.com/auth/contacts.readonly'
+  ];
 
-    //Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: scopes,
+  );
 
-    //Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
+  Future<void> canAccess() async{
+    _googleSignIn.isSignedIn().then((value) {
+      if (kDebugMode) {
+        print(value);
+      }
+    });
+  }
 
-    //Once signed in, return the UserCredential
-    return await FirebaseAuth.instance.signInWithCredential(credential);
+  Future<void> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+      await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleSignInAuthentication =
+      await googleSignInAccount!.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
+      await _auth.signInWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      print(e.message);
+      throw e;
+    }
   }
 
   void handleSignOut(BuildContext context) async {
-    try {
-      await _googleSignIn.signOut();
-    }
-    catch (e) {
-      return null;
-    }
+    await _googleSignIn.signOut();
+    await _auth.signOut();
   }
 
   Future<void> _storeUID(String uid) async {
