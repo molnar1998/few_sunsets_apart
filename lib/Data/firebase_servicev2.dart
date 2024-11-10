@@ -82,16 +82,17 @@ class FirebaseDataFetcher {
     print('Saved data: userId: $userId, field: $field, value: $value');
   }
 
-  Future<void> saveFriend(String userId, String newFriendId) async {
+  Future<void> saveFriend(String userId, String newFriendName) async {
     users
         .doc(userId)
         .collection('friends')
         .add({
-      'friendId': newFriendId,
+      'friendUId': newFriendName,
+      'friendId': await retrieveUserId(newFriendName),
       'timestamp': FieldValue.serverTimestamp(),
       // Any additional metadata
     });
-    print('Saved data: userId: $userId, friend: $newFriendId');
+    print('Saved data: userId: $userId, friend: $newFriendName');
   }
 
   Future<dynamic> retrieveFriends(String userId) async {

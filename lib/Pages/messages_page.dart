@@ -1,9 +1,13 @@
+import 'package:few_sunsets_apart/Data/firebase_messaging_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../Data/nav_bar.dart';
 
 class MessagePage extends StatefulWidget {
-  const MessagePage({super.key});
+  const MessagePage({
+    super.key,
+  });
 
   @override
   State<StatefulWidget> createState() => _MessagePageState();
@@ -13,9 +17,25 @@ class _MessagePageState extends State<MessagePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Messages')),
-      body: Column(),
+      appBar: AppBar(title: Text('Messages')),
+      body: Column(
+        children: [
+          // messages
+
+          // user input
+          _buildMessageInput(),
+        ],
+      ),
       bottomNavigationBar: const NavBar(),
     );
   }
+
+  Widget _buildMessageInput() {
+    return Row(
+      children: [
+        // textfield
+      ],
+    );
+  }
+
 }

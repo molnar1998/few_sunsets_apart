@@ -3,6 +3,7 @@ import 'package:few_sunsets_apart/Data/page_control.dart';
 import 'package:few_sunsets_apart/Data/push_notification_service.dart';
 import 'package:few_sunsets_apart/Data/firebase_service.dart';
 import 'package:few_sunsets_apart/Data/user_data.dart';
+import 'package:few_sunsets_apart/Pages/chat_page.dart';
 import 'package:few_sunsets_apart/Widgets/friend_card.dart';
 import 'package:few_sunsets_apart/Widgets/request_card.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -107,11 +108,18 @@ class _ProfilePageState extends State<ProfilePage> {
             child: ListView.builder(
                 itemCount: UserData.friends.length,
                 itemBuilder: (context, index) {
-                  final friendName = UserData.friends[index];
+                  final friend = UserData.friends.elementAt(index);
                   return FriendCard(
-                      friendName: friendName,
+                      friendName: friend['friendUId'],
                       onSendMessage: () async {
-                        Navigator.pushReplacementNamed(context, '/message');
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (context) => ChatPage(
+                                  receiverUserEmail: friend['friendUId'],
+                                  receiverUserID: friend['friendId'],
+                              ),
+                          ),
+                        );
                         PageControl.updatePage('/message');
                       },
                       onDeleteFriend: () async {

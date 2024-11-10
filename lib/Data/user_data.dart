@@ -1,16 +1,18 @@
 
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserData {
   static String name = '';
-  static String myLoveName = '';
+  static String partnerName = '';
   static String mood = "Happy";
   static String moodPic = "lib/Assets/Emotions/Happy.png";
   static String myLoveID = '';
   static String id = "";
-  static int myLoveMissMe = 0;
+  static int missCounter = 0;
   static bool loveCheck = true;
   static var requests = [];
-  static var friends = [];
+  static List<Map<String, dynamic>> friends = [];
   static int counter = 0;
 
   // Setter method to update the user's name
@@ -30,11 +32,11 @@ class UserData {
   }
 
   static void updateMyLoveName(String name) {
-    myLoveName = name;
+    partnerName = name;
   }
 
   static void updateMyLoveMissMe(int missMe) {
-    myLoveMissMe = missMe;
+    missCounter = missMe;
   }
 
   static void updateLoveCheck(bool check) {
@@ -49,12 +51,21 @@ class UserData {
     requests = newRequests;
   }
 
-  static void updateFriends(var newFriends){
-    if(newFriends != null) {
+  static Future<void> updateFriends(List<QueryDocumentSnapshot<Map<String, dynamic>>> newFriends) async {
+    bool contain = false;
+    if(newFriends.isNotEmpty){
       for(var friend in newFriends){
-        if(!friends.contains(friend['friendId'])){
-          friends.add(friend['friendId']);
-        }
+         Map<String, dynamic> temp = await friend.data();
+         for(var element in friends){
+           if(element['friendId'] == temp['friendId']){
+             contain = true;
+           }
+         }
+         if(contain == false){
+           friends.add(temp);
+         } else {
+           contain = false;
+         }
       }
     }
   }
@@ -69,11 +80,11 @@ class UserData {
 
   static void clearData(){
     name = '';
-    myLoveName = '';
+    partnerName = '';
     mood = "Happy";
     myLoveID = '';
     id = "";
-    myLoveMissMe = 0;
+    missCounter = 0;
     loveCheck = true;
     moodPic = "lib/Assets/Emotions/Happy.png";
     requests = [];

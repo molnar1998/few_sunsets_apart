@@ -1,9 +1,29 @@
-class Message {
-  final String author;
-  final DateTime createdAt;
-  final dynamic authorId;
-  final dynamic text;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-  Message(this.author, this.createdAt, this.authorId, this.text);
+class Message {
+  final String senderId;
+  final String senderEmail;
+  final String receiverId;
+  final String message;
+  final Timestamp createdAt;
+
+  Message({
+    required this.senderId,
+    required this.senderEmail,
+    required this.receiverId,
+    required this.message,
+    required this.createdAt,
+  });
+
+  // convert to a map
+  Map<String, dynamic> toMap() {
+    return {
+      'senderId': senderId,
+      'senderEmail': senderEmail,
+      'receiverId': receiverId,
+      'message': message,
+      'createdAt': createdAt,
+    };
+  }
 }
 

@@ -19,8 +19,8 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   int currentPageIndex = PageControl.page;
   Counter counter = Counter();
-  var myLoveMissMe = 0;
-  var myLoveName = "";
+  var missCounter = 0;
+  var partnerName = "";
   final FirebaseDataFetcher _dataFetcher = FirebaseDataFetcher();
   final GoogleSignInHelper _googleSignIn = GoogleSignInHelper();
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -59,8 +59,8 @@ class HomePageState extends State<HomePage> {
           UserData.updateLoveCheck(false);
         }
       });
-      myLoveName = UserData.myLoveName;
-      myLoveMissMe = UserData.myLoveMissMe;
+      partnerName = UserData.partnerName;
+      missCounter = UserData.missCounter;
       _dataFetcher.retrieveData(UserData.id, "mood_pic").then((value) {
         setState(() {
           UserData.updateMoodPic(value);
@@ -181,10 +181,8 @@ class HomePageState extends State<HomePage> {
                     backgroundColor: Colors.white,
                     onPressed: () {
                       setState(() {
-                        UserData.incrementCounter();
-                        //counter.incrementCounter();
-                        //c = counter.getCounter();
-                        c = UserData.counter;
+                        counter.incrementCounter();
+                        c = counter.getCounter();
                         debugPrint("Pressed!");
                       });
                     },
@@ -194,7 +192,7 @@ class HomePageState extends State<HomePage> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text('$myLoveName miss me $myLoveMissMe times :3', textAlign: TextAlign.center,style: const TextStyle(fontWeight: FontWeight.bold),),
+                          child: Text('$partnerName miss me $missCounter times :3', textAlign: TextAlign.center,style: const TextStyle(fontWeight: FontWeight.bold),),
                         ),
                         const Icon(Icons.favorite,size: 100,),
                         const SizedBox(height: 4), // Adjust the spacing as needed

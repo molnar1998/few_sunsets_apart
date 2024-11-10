@@ -69,6 +69,7 @@ class _LoadingPageState extends State<LoadingPage> {
       UserData.updateMood(await _dataFetcher.retrieveData(user.uid, "mood"));
       UserData.updateName(user.displayName!);
       UserData.updateCounter(await _dataFetcher.retrieveData(user.uid, "miss_counter"));
+      UserData.updateFriends(await _dataFetcher.retrieveFriends(UserData.id));
 
       print("User UID: $uid");
       print("User Email: $email");
