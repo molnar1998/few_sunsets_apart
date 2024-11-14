@@ -1,10 +1,40 @@
 {
   "project_info": {
     "project_number": "380801907097",
+    "firebase_url": "https://fewsunsetsapart-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "fewsunsetsapart",
-    "storage_bucket": "fewsunsetsapart.appspot.com"
+    "storage_bucket": "fewsunsetsapart.firebasestorage.app"
   },
   "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:380801907097:android:16aeb6cbba98bbcf217b08",
+        "android_client_info": {
+          "package_name": "com.example.few_sunsets_apart"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "380801907097-kkov208v9rs1jjhlu4e2mpsvess46j4g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBK9rbhlYMHwM2QG7VHQpXDQBR6NR8SL3Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "380801907097-kkov208v9rs1jjhlu4e2mpsvess46j4g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
     {
       "client_info": {
         "mobilesdk_app_id": "1:380801907097:android:b23c115255e1302f217b08",

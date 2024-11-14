@@ -47,8 +47,11 @@ dependencies:
   cloud_firestore: ^5.0.0
   flutter_secure_storage:
   provider: ^6.1.2
-  syncfusion_flutter_calendar: ^26.2.13
+  syncfusion_flutter_calendar: ^27.1.58
   flutter_dotenv: ^5.1.0
+  home_widget: ^0.7.0
+  file_picker: ^8.1.4
+  firebase_storage: ^12.3.6
 
 dev_dependencies:
   flutter_test:

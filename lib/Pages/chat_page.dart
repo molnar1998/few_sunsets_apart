@@ -7,11 +7,11 @@ import 'package:flutter/material.dart';
 import '../Data/firebase_messaging_service.dart';
 
 class ChatPage extends StatefulWidget {
-  final String receiverUserEmail;
+  final String receiverUserName;
   final String receiverUserID;
   const ChatPage({
     super.key,
-    required this.receiverUserEmail,
+    required this.receiverUserName,
     required this.receiverUserID
   });
 
@@ -35,7 +35,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.receiverUserEmail)),
+      appBar: AppBar(title: Text(widget.receiverUserName)),
       body: Column(
         children: [
           // messages
@@ -106,10 +106,13 @@ class _ChatPageState extends State<ChatPage> {
       children: [
         // textfield
         Expanded(
-            child: MyTextField(
-                controller: _messageController,
-                hintText: 'Enter message',
-                obscureText: false
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: MyTextField(
+                  controller: _messageController,
+                  hintText: 'Enter message',
+                  obscureText: false
+              ),
             ),
         ),
         // send buton

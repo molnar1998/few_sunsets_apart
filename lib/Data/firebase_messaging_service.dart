@@ -78,6 +78,28 @@ class FirebaseMessagingService extends ChangeNotifier {
     return Snapshot;
   }
 
+  // GET LAST MESSAGES
+  Stream<String> getLastMessage(String userId, String otherUserId) {
+    List<String> ids = [userId, otherUserId];
+    ids.sort();
+    String chatRoomId = ids.join("_");
+
+    return _firestore
+        .collection('chat_rooms')
+        .doc(chatRoomId).collection('messages')
+        .orderBy('createdAt', descending: false)
+        .snapshots()
+        .map((snapshot){
+          // Get the last document in the list if it exists
+          if(snapshot.docs.isNotEmpty) {
+            var lastMessageDoc = snapshot.docs.last;
+            return lastMessageDoc['message'];
+          } else {
+            return "";
+          }
+    });
+  }
+
 }
 
 @pragma('vm:entry-point')

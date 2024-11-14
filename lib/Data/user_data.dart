@@ -55,7 +55,7 @@ class UserData {
     bool contain = false;
     if(newFriends.isNotEmpty){
       for(var friend in newFriends){
-         Map<String, dynamic> temp = await friend.data();
+         Map<String, dynamic> temp = friend.data();
          for(var element in friends){
            if(element['friendId'] == temp['friendId']){
              contain = true;

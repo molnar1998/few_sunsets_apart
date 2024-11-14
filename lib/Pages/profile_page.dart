@@ -115,15 +115,15 @@ class _ProfilePageState extends State<ProfilePage> {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                               builder: (context) => ChatPage(
-                                  receiverUserEmail: friend['friendUId'],
+                                  receiverUserName: friend['friendUId'],
                                   receiverUserID: friend['friendId'],
                               ),
                           ),
                         );
-                        PageControl.updatePage('/message');
                       },
                       onDeleteFriend: () async {
-
+                        await _dataFetcher.deleteRequest(UserData.id, UserData.requests[index]);
+                        await FirebaseService().loadData();
                       },
                   );
                 }),

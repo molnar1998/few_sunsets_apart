@@ -54,9 +54,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyBK9rbhlYMHwM2QG7VHQpXDQBR6NR8SL3Y',
-    appId: '1:380801907097:android:b23c115255e1302f217b08',
+    appId: '1:380801907097:android:16aeb6cbba98bbcf217b08',
     messagingSenderId: '380801907097',
     projectId: 'fewsunsetsapart',
-    storageBucket: 'fewsunsetsapart.appspot.com',
+    databaseURL: 'https://fewsunsetsapart-default-rtdb.europe-west1.firebasedatabase.app',
+    storageBucket: 'fewsunsetsapart.firebasestorage.app',
   );
+
 }
