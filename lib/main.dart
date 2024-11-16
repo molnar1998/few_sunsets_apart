@@ -5,10 +5,12 @@ import 'package:few_sunsets_apart/Pages/emotion_page.dart';
 import 'package:few_sunsets_apart/Pages/loading_page.dart';
 import 'package:few_sunsets_apart/Pages/memory_page.dart';
 import 'package:few_sunsets_apart/Pages/sign_up_page.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:workmanager/workmanager.dart';
 
 import 'Pages/home_page.dart';
 import 'Pages/login_page.dart';
@@ -19,6 +21,7 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: kDebugMode);
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

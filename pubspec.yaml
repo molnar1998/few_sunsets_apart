@@ -52,6 +52,7 @@ dependencies:
   home_widget: ^0.7.0
   file_picker: ^8.1.4
   firebase_storage: ^12.3.6
+  workmanager: ^0.5.2
 
 dev_dependencies:
   flutter_test:
