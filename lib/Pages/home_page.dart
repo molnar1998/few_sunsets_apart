@@ -335,8 +335,8 @@ class HomePageState extends State<HomePage> {
                       setState(() {
                         counter.incrementCounter();
                         c = counter.getCounter();
-                        _sendAndUpdate('Hi');
-                        _getInstalledWidgets();
+                        _sendAndUpdate(c.toString());
+                        //_getInstalledWidgets();
                         debugPrint("Pressed!");
                       });
                     },
