@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
@@ -17,6 +18,24 @@ import '../Data/user_data.dart';
 
 /// Used for Background Updates using Workmanager Plugin
 @pragma("vm:entry-point")
+FutureOr<void> backgroundCallback(Uri? data) async {
+  if (data?.host == 'titleclicked') {
+    await HomeWidget.setAppGroupId('com.example.few_sunsets_apart');
+    await HomeWidget.saveWidgetData<String>('appwidget_text', 'Success');
+    await HomeWidget.updateWidget(
+      name: 'MissCounterWidgetReceiver',
+      iOSName: 'HomeWidgetExample',
+    );
+    if (Platform.isAndroid) {
+      await HomeWidget.updateWidget(
+        qualifiedAndroidName:
+        'com.example.few_sunsets_apart.MissCounterWidgetReceiver',
+      );
+    }
+  }
+}
+
+@pragma("vm:entry-point")
 void callbackDispatcher() async {
   Workmanager().executeTask((taskName, inputData) {
     final now = DateTime.now();
@@ -32,13 +51,13 @@ void callbackDispatcher() async {
     ]).then((value) async {
       Future.wait<bool?>([
         HomeWidget.updateWidget(
-          name: 'MissCounterWidgetProvider',
+          name: 'MissCounterWidgetReceiver',
           iOSName: 'MissCounterWidget',
         ),
         if (Platform.isAndroid)
           HomeWidget.updateWidget(
             qualifiedAndroidName:
-            'com.example.few_sunsets_apart.MissCounterWidgetProvider',
+            'com.example.few_sunsets_apart.MissCounterWidgetReceiver',
           ),
       ]);
       return !value.contains(false);
@@ -50,27 +69,16 @@ void callbackDispatcher() async {
 @pragma("vm:entry-point")
 Future<void> interactiveCallback(Uri? data) async {
   if (data?.host == 'titleclicked') {
-    final greetings = [
-      'Hello',
-      'Hallo',
-      'Bonjour',
-      'Hola',
-      'Ciao',
-      '哈洛',
-      '안녕하세요',
-      'xin chào',
-    ];
-    final selectedGreeting = greetings[Random().nextInt(greetings.length)];
     await HomeWidget.setAppGroupId('com.example.few_sunsets_apart');
-    await HomeWidget.saveWidgetData<String>('title', selectedGreeting);
+    await HomeWidget.saveWidgetData<String>('appwidget_text', 'Success');
     await HomeWidget.updateWidget(
-      name: 'HomeWidgetExampleProvider',
+      name: 'MissCounterWidgetReceiver',
       iOSName: 'HomeWidgetExample',
     );
     if (Platform.isAndroid) {
       await HomeWidget.updateWidget(
         qualifiedAndroidName:
-        'com.example.few_sunsets_apart.MissCounterWidgetProvider',
+        'com.example.few_sunsets_apart.MissCounterWidgetReceiver',
       );
     }
   }
@@ -91,18 +99,21 @@ class HomePageState extends State<HomePage> {
   final FirebaseDataFetcher _dataFetcher = FirebaseDataFetcher();
   final GoogleSignInHelper _googleSignIn = GoogleSignInHelper();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  int c = 0;
 
   @override
   void initState() {
     super.initState();
     HomeWidget.setAppGroupId('com.example.few_sunsets_apart');
     HomeWidget.registerInteractivityCallback(interactiveCallback);
+    HomeWidget.registerInteractivityCallback(backgroundCallback);
   }
 
-  Future _sendData(String c) async {
+
+  Future _sendData(String id, String data) async {
     try {
       return Future.wait([
-        HomeWidget.saveWidgetData<String>('appwidget_text', c),
+        HomeWidget.saveWidgetData<String>(id, data),
         HomeWidget.renderFlutterWidget(
           const Icon(
             Icons.flutter_dash,
@@ -121,13 +132,13 @@ class HomePageState extends State<HomePage> {
     try {
       return Future.wait([
         HomeWidget.updateWidget(
-          name: 'MissCounterWidgetProvider',
+          name: 'MissCounterWidgetReceiver',
           iOSName: 'MissCounterWidget',
         ),
         if (Platform.isAndroid)
           HomeWidget.updateWidget(
             qualifiedAndroidName:
-            'com.example.few_sunsets_apart.MissCounterWidgetProvider',
+            'com.example.few_sunsets_apart.MissCounterWidgetReceiver',
           ),
       ]);
     } on PlatformException catch (exception) {
@@ -135,8 +146,8 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> _sendAndUpdate(String c) async {
-    await _sendData(c);
+  Future<void> _sendAndUpdate(String id, String data) async {
+    await _sendData(id ,data);
     await _updateWidget();
   }
 
@@ -183,7 +194,7 @@ class HomePageState extends State<HomePage> {
     var displayName = UserData.name;
     var formattedDate = DateFormat('MMMM dd, yyyy').format(now);
     counter.initCounter();
-    int c = counter.getCounter();
+    c = counter.getCounter();
 
     if(UserData.loveCheck == true){
       _dataFetcher.retrieveData(UserData.id, 'partner_id').then((value) {
@@ -246,6 +257,8 @@ class HomePageState extends State<HomePage> {
                 _googleSignIn.handleSignOut(context);
                 _auth.signOut();
                 Navigator.pushReplacementNamed(context, '/login');
+              } else if (value == 'visa') {
+                Navigator.pushReplacementNamed(context, '/visa');
               }
             },
             itemBuilder: (BuildContext context) {
@@ -257,6 +270,10 @@ class HomePageState extends State<HomePage> {
                 const PopupMenuItem<String>(
                   value: 'logout',
                   child: Text('Log Out'),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'visa',
+                  child: Text('Visa info')
                 ),
               ];
             },
@@ -335,7 +352,7 @@ class HomePageState extends State<HomePage> {
                       setState(() {
                         counter.incrementCounter();
                         c = counter.getCounter();
-                        _sendAndUpdate(c.toString());
+                        _sendAndUpdate('appwidget_text',c.toString());
                         //_getInstalledWidgets();
                         debugPrint("Pressed!");
                       });

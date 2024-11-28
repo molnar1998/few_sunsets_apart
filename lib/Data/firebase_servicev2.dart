@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 class FirebaseDataFetcher {
   final CollectionReference users = FirebaseFirestore.instance.collection('users');
@@ -19,8 +20,29 @@ class FirebaseDataFetcher {
       }
     } catch (e) {
       // Handle any errors that might occur during the query
-      print('Error fetching username: $e');
+      if (kDebugMode) {
+        print('Error fetching username: $e');
+      }
       rethrow; // Re-throw the exception for handling in the calling code
+    }
+  }
+
+  Future<bool> checkUserNameAvailability(String username) async {
+    try{
+      // Query the collection to find the document with the desired username
+      final querySnapshot = await users.where('user_name', isEqualTo: username).get();
+
+      if(querySnapshot.docs.isEmpty) {
+        return true;
+      } else{
+        return false;
+      }
+
+    } catch(e) {
+      if (kDebugMode) {
+        print('Error fetching username: $e');
+      }
+      rethrow;
     }
   }
 

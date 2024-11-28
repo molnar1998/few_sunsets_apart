@@ -1,16 +1,21 @@
 package com.example.few_sunsets_apart
 
+import HomeWidgetGlanceWidgetReceiver
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
 import android.widget.RemoteViews
-import es.antonborri.home_widget.HomeWidgetPlugin
+import androidx.glance.GlanceId
+import androidx.glance.action.ActionParameters
+import androidx.glance.appwidget.action.ActionCallback
+import es.antonborri.home_widget.HomeWidgetBackgroundIntent
 import es.antonborri.home_widget.HomeWidgetProvider
 
 /**
  * Implementation of App Widget functionality.
  */
-class MissCounterWidgetProvider : HomeWidgetProvider() {
+/**class MissCounterWidgetReceiver : HomeWidgetProvider() {
     override fun onUpdate(
         context: Context,
         appWidgetManager: AppWidgetManager,
@@ -24,5 +29,17 @@ class MissCounterWidgetProvider : HomeWidgetProvider() {
             }
             appWidgetManager.updateAppWidget(widgetId, views)
         }
+    }
+}**/
+
+class MissCounterWidgetReceiver : HomeWidgetGlanceWidgetReceiver<MissCounterAppWidget>() {
+    override val glanceAppWidget: MissCounterAppWidget
+        get() = MissCounterAppWidget()
+}
+
+class InteractiveAction : ActionCallback {
+    override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
+        val backgroundIntent = HomeWidgetBackgroundIntent.getBroadcast(context, Uri.parse("homeWidgetExample://titleclicked"))
+        backgroundIntent.send()
     }
 }

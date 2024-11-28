@@ -5,6 +5,7 @@ import 'package:few_sunsets_apart/Pages/emotion_page.dart';
 import 'package:few_sunsets_apart/Pages/loading_page.dart';
 import 'package:few_sunsets_apart/Pages/memory_page.dart';
 import 'package:few_sunsets_apart/Pages/sign_up_page.dart';
+import 'package:few_sunsets_apart/Pages/visa_page.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -55,6 +56,7 @@ class MyApp extends StatelessWidget {
         '/addMemory' : (context) => const AddMemoryPage(),
         '/signUp' : (context) => const SignUpPage(),
         '/loading' : (context) => const LoadingPage(homePage: HomePage()),
+        '/visa' : (context) => VisaPage(),
       },
     );
   }
