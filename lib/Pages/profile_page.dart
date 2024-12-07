@@ -21,7 +21,8 @@ class _ProfilePageState extends State<ProfilePage> {
   final TextEditingController _usernameController = TextEditingController();
   final FirebaseDataFetcher _dataFetcher = FirebaseDataFetcher();
   final id = UserData.id;
-  final myLoveID = UserData.myLoveID;
+  final myPartnerUsername = UserData.myLoveID;
+  final _formKey = GlobalKey<FormState>();
 
   // Cloud Messaging variables
   late final FirebaseMessaging messaging;
@@ -50,37 +51,47 @@ class _ProfilePageState extends State<ProfilePage> {
       body: Column(
         children: [
           Text("My ID: $id"),
-          Text("My love: $myLoveID"),
-          TextFormField(
-            controller: _usernameController,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Enter your love username!',
+          Text("My partner username: $myPartnerUsername"),
+          Form(
+            key: _formKey,
+            child: TextFormField(
+              controller: _usernameController,
+              validator: (value) {
+                if(value!.isEmpty){
+                  return "Please enter your partner username first!";
+                }
+              },
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Enter your partner username!',
+              ),
             ),
           ),
           ElevatedButton(
               onPressed: () async {
-                final token = await _dataFetcher.retrieveDataByUserName(_usernameController.text, 'id_token');
-                final uid = await _dataFetcher.retrieveUserId(_usernameController.text);
-                // Check permission
-                final permissionStatus = await Permission.notification.request();
-                if (permissionStatus.isGranted) {
-                  await PushNotificationService.sendNotificationToSelectedPartner(token, context, UserData.name, 'request');
-                  await _dataFetcher.saveRequest(uid, UserData.name);
-                } else {
-                  // Handle permission denied case (optional)
-                  print('Notification permission denied');
+                if(_formKey.currentState!.validate()){
+                  final token = await _dataFetcher.retrieveDataByUserName(_usernameController.text, 'id_token');
+                  final uid = await _dataFetcher.retrieveUserId(_usernameController.text);
+                  // Check permission
+                  final permissionStatus = await Permission.notification.request();
+                  if (permissionStatus.isGranted) {
+                    await PushNotificationService.sendNotificationToSelectedPartner(token, context, UserData.name, 'request');
+                    await _dataFetcher.saveRequest(uid, UserData.name);
+                  } else {
+                    // Handle permission denied case (optional)
+                    print('Notification permission denied');
+                  }
                 }
               },
-              child: const Text("Add your love!")),
-          ElevatedButton(
+              child: const Text("Add your partner!")),
+          /**ElevatedButton(
             onPressed: () async {
               final fcmToken = await FirebaseMessaging.instance.getToken();
               print(fcmToken);
               await _dataFetcher.saveData(id, 'id_token', fcmToken);
             },
             child: const Text("Get my ID token!"),
-          ),
+          ),**/
           Expanded(
             child: ListView.builder(
               itemCount: UserData.requests.length,

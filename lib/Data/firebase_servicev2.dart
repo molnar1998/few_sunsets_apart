@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 
 class FirebaseDataFetcher {
   final CollectionReference users = FirebaseFirestore.instance.collection('users');
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<dynamic> retrieveUserId(String username) async {
     try {
@@ -162,7 +163,9 @@ class FirebaseDataFetcher {
     for (var doc in querySnapshot.docs) {
       await doc.reference.delete();
     }
-    print('Delete data: userId: $userId, friend: $friendId');
+    if (kDebugMode) {
+      print('Delete data: userId: $userId, friend: $friendId');
+    }
   }
 
   Future<void> deleteRequest(String userId, dynamic friendId) async {
@@ -171,6 +174,33 @@ class FirebaseDataFetcher {
         .update({
       'request': FieldValue.arrayRemove([friendId])
     });
-    print('Delete data: userId: $userId, request: $friendId');
+    if (kDebugMode) {
+      print('Delete data: userId: $userId, request: $friendId');
+    }
+  }
+
+  Future<void> deleteMemory(String userId, Timestamp timestamp)async {
+    final snapshot = await _firestore.collection('memories')
+        .doc(userId)
+        .collection('memory')
+        .where('createdAt', isEqualTo: timestamp)
+        .get();
+    for (var doc in snapshot.docs){
+      await doc.reference.delete();
+    }
+    if(kDebugMode){
+      print('Delete data: userId: $userId, memory $userId ${timestamp.toDate().toString()}');
+    }
+  }
+
+  // GET MEMORIES
+  Stream<QuerySnapshot> getMemories(String userId) {
+    var Snapshot = _firestore
+        .collection('memories')
+        .doc(userId).collection('memory')
+        .orderBy('createdAt', descending: false)
+        .snapshots();
+
+    return Snapshot;
   }
 }

@@ -16,6 +16,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   final GoogleSignInHelper _googleSignIn = GoogleSignInHelper();
   final EmailPasswordAuth _emailPasswordAuth = EmailPasswordAuth();
+  final _formKey = GlobalKey<FormState>();
   bool _showTextFields = false;
 
   @override
@@ -23,7 +24,6 @@ class _LoginPageState extends State<LoginPage> {
     // TODO: implement initState
     super.initState();
     _googleSignIn.canAccess();
-
   }
 
   @override
@@ -43,18 +43,8 @@ class _LoginPageState extends State<LoginPage> {
                 child: RichText(
                   text: TextSpan(
                     children: <TextSpan>[
-                      TextSpan(
-                          text: "24/7",
-                          style: TextStyle(
-                              color: Colors.brown[800],
-                              fontSize: 72,
-                              fontWeight: FontWeight.bold)),
-                      const TextSpan(
-                          text: "",
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 72,
-                              fontWeight: FontWeight.bold)),
+                      TextSpan(text: "24/7", style: TextStyle(color: Colors.brown[800], fontSize: 72, fontWeight: FontWeight.bold)),
+                      const TextSpan(text: "", style: TextStyle(color: Colors.black, fontSize: 72, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),
@@ -77,33 +67,44 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Your company/organization/app name
-                  Expanded(
-                      child: Image.asset("lib/Assets/Images/2.png")
-                  ),
+                  Expanded(child: Image.asset("lib/Assets/Images/2.png")),
                   const SizedBox(height: 20),
                   // Email input field
                   Visibility(
                       visible: _showTextFields,
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            controller: _emailController,
-                            decoration: const InputDecoration(
-                              labelText: 'Email',
-                              border: OutlineInputBorder(),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            TextFormField(
+                              controller: _emailController,
+                              validator: (value){
+                                if(value!.isEmpty) {
+                                  return "Please enter your email address!";
+                                }
+                              },
+                              decoration: const InputDecoration(
+                                labelText: 'Email',
+                                border: OutlineInputBorder(),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 10),
-                          // Password input field
-                          TextFormField(
-                            obscureText: true,
-                            controller: _passwordController,
-                            decoration: const InputDecoration(
-                              labelText: 'Password',
-                              border: OutlineInputBorder(),
+                            const SizedBox(height: 10),
+                            // Password input field
+                            TextFormField(
+                              obscureText: true,
+                              controller: _passwordController,
+                              validator: (value){
+                                if(value!.isEmpty) {
+                                  return "Please enter your password!";
+                                }
+                              },
+                              decoration: const InputDecoration(
+                                labelText: 'Password',
+                                border: OutlineInputBorder(),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       )),
                   const SizedBox(height: 10),
                   ElevatedButton.icon(
@@ -111,8 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                       minimumSize: const Size(500, 50),
                       foregroundColor: Colors.white,
                       backgroundColor: Colors.brown[800],
-                      textStyle: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
+                      textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     onPressed: () {
                       if (_showTextFields == false) {
@@ -120,13 +120,46 @@ class _LoginPageState extends State<LoginPage> {
                           _showTextFields = !_showTextFields;
                         });
                       } else {
-                        _emailPasswordAuth.signInWithEmailAndPassword(_emailController.text, _passwordController.text).then((value) {
-                          if(value != null){
-                            Navigator.pushReplacementNamed(context, '/loading');
-                          } else{
-
-                          }
-                        });
+                        if(_formKey.currentState!.validate()){
+                          _emailPasswordAuth.signInWithEmailAndPassword(_emailController.text, _passwordController.text).then((value) {
+                            if (value != null && value.user!.emailVerified) {
+                              Navigator.pushReplacementNamed(context, '/loading');
+                            } else {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) => AlertDialog(
+                                    title: const Text('Confirm your e-mail!'),
+                                    content: Text('Please before login confirm your e-mail!'),
+                                    actions: <Widget>[
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context, 'Okay'),
+                                        child: const Text('Okay'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () async => {
+                                          await value?.user!.sendEmailVerification().whenComplete(() {
+                                            showDialog(
+                                                context: context,
+                                                builder: (BuildContext context) => AlertDialog(
+                                                  title: const Text('Confirm your e-mail!'),
+                                                  content: Text('A conformation e-mail is sent to your e-mail address!'),
+                                                  actions: <Widget>[
+                                                    TextButton(
+                                                      onPressed: () => Navigator.pop(context, 'Okay'),
+                                                      child: const Text('Okay'),
+                                                    ),
+                                                  ],
+                                                ));
+                                          }),
+                                        },
+                                        child: const Text('Resend'),
+                                      )
+                                    ],
+                                  )
+                              );
+                            }
+                          });
+                        }
                       }
                     },
                     label: Text('Login with Email'.toUpperCase()),
@@ -139,14 +172,15 @@ class _LoginPageState extends State<LoginPage> {
                       minimumSize: const Size(500, 50),
                       foregroundColor: Colors.white,
                       backgroundColor: Colors.red[900],
-                      textStyle: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold),
+                      textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     onPressed: () {
                       UserData.clearData();
                       _googleSignIn.signInWithGoogle().then((value) {
                         // If login is successful, navigate to the home page.
-                        //Navigator.pushReplacementNamed(context, '/loading');
+                        if(value != null){
+                          Navigator.pushReplacementNamed(context, '/loading');
+                        }
                       });
                     },
                     icon: const Icon(Icons.email_outlined),
@@ -158,9 +192,8 @@ class _LoginPageState extends State<LoginPage> {
                       minimumSize: const Size(500, 50),
                       foregroundColor: Colors.red[900],
                       backgroundColor: Colors.white,
-                      textStyle: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
+                      textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
                     onPressed: () {
                       Navigator.pushReplacementNamed(context, '/signUp');
                     },

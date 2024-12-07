@@ -261,7 +261,7 @@ class _SignUpPageState extends State<SignUpPage> {
                      UserData.updateName(_usernameController.text);
                      _emailPasswordAuth.signUp(context, _emailController.text, _passwordController.text).then((value) {
                        if (value != null) {
-                         Navigator.pushReplacementNamed(context, '/login');
+                         //Navigator.pushReplacementNamed(context, '/login');
                        }
                      });
                    }

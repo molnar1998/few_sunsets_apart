@@ -19,7 +19,7 @@ class EmailPasswordAuth {
       );
       final user = userCredential.user;
       if (user != null) {
-        await _storeUID(user.uid);// Store UID in secure storage
+        await _storeUID(user.uid); // Store UID in secure storage
         UserData.updateID(user.uid);
         UserData.updateName(user.displayName!);
       }
@@ -39,9 +39,25 @@ class EmailPasswordAuth {
       final user = userCredential.user;
       if(user != null){
         await _storeUID(user.uid);
-        user.updateDisplayName(UserData.name);
+        await user.updateDisplayName(UserData.name);
         _dataFetcher.saveData(user.uid, "user_name", UserData.name);
         UserData.updateID(user.uid);
+        await FirebaseAuth.instance.setLanguageCode("fr");
+        await user.sendEmailVerification().whenComplete(() {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) => AlertDialog(
+                title: const Text('Confirm your e-mail!'),
+                content: Text('A conformation e-mail is sent to your $email e-mail address!'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, 'Okay'),
+                    child: const Text('Okay'),
+                  ),
+                ],
+              )
+          );
+        });
       }
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
