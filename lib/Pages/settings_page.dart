@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../Data/nav_bar.dart';
+import '../Widgets/nav_bar.dart';
 import '../Data/page_control.dart';
 
 class SettingPage extends StatefulWidget {

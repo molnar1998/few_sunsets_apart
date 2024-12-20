@@ -2,7 +2,7 @@ import 'package:few_sunsets_apart/Data/firebase_messaging_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../Data/nav_bar.dart';
+import '../Widgets/nav_bar.dart';
 import '../Data/page_control.dart';
 import '../Data/user_data.dart';
 import '../Widgets/chat_card.dart';

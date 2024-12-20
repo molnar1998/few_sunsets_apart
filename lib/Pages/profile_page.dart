@@ -133,7 +133,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         );
                       },
                       onDeleteFriend: () async {
-                        await _dataFetcher.deleteRequest(UserData.id, UserData.requests[index]);
+                        await _dataFetcher.deleteFriend(UserData.id, UserData.requests[index]);
                         await FirebaseService().loadData();
                       },
                   );

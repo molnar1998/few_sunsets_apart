@@ -57,8 +57,8 @@ class PushNotificationService
         'token': deviceToken,
         'notification':
         {
-          'title': "Love request from ${UserData.name}",
-          'body': "Love request!"
+          'title': "Partner request from ${UserData.name}",
+          'body': "Partner request!"
         },
         'data':
         {

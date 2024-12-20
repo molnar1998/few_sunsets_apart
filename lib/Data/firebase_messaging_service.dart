@@ -6,7 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import '../main.dart';
-import 'message.dart'; // Import to access navigator key
+import '../Models/message.dart'; // Import to access navigator key
 
 
 class FirebaseMessagingService extends ChangeNotifier {

@@ -8,7 +8,7 @@ import 'package:few_sunsets_apart/Data/user_data.dart';
 class FirebaseService {
   CollectionReference usersCollections =
   FirebaseFirestore.instance.collection('users');
-  FirebaseDataFetcher _dataFetcher = FirebaseDataFetcher();
+  final FirebaseDataFetcher _dataFetcher = FirebaseDataFetcher();
 
   // Change counter value for everyone
   Future<void> resetCounterValues() async{

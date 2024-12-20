@@ -12,7 +12,7 @@ import 'package:workmanager/workmanager.dart';
 import '../Auth/google_sign_in.dart';
 import '../Data/counter.dart';
 import '../Data/firebase_servicev2.dart';
-import '../Data/nav_bar.dart';
+import '../Widgets/nav_bar.dart';
 import '../Data/page_control.dart';
 import '../Data/user_data.dart';
 

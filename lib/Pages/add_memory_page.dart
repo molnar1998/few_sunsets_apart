@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:few_sunsets_apart/Data/memory.dart';
+import 'package:few_sunsets_apart/Models/memory.dart';
 import 'package:few_sunsets_apart/Data/user_data.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
