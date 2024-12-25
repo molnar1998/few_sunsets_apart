@@ -196,7 +196,7 @@ class HomePageState extends State<HomePage> {
     counter.initCounter();
     c = counter.getCounter();
 
-    if(UserData.loveCheck == true){
+    if(UserData.partnerCheck == true){
       _dataFetcher.retrieveData(UserData.id, 'partner_id').then((value) {
         if (value != null) {
           print('myLoveID: $value');

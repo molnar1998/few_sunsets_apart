@@ -33,6 +33,7 @@ migrate_working_dir/
 .pub/
 /build/
 /lib/Assets/fewsunsetsapart-47d253220c56.json
+/lib/env/
 
 # Symbolication related
 app.*.symbols

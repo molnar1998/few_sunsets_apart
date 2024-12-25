@@ -10,7 +10,7 @@ class UserData {
   static String myLoveID = '';
   static String id = "";
   static int missCounter = 0;
-  static bool loveCheck = true;
+  static bool partnerCheck = true;
   static var requests = [];
   static List<Map<String, dynamic>> friends = [];
   static int counter = 0;
@@ -40,7 +40,7 @@ class UserData {
   }
 
   static void updateLoveCheck(bool check) {
-    loveCheck = check;
+    partnerCheck = check;
   }
 
   static void updateMoodPic(String newMoodPic){
@@ -85,7 +85,7 @@ class UserData {
     myLoveID = '';
     id = "";
     missCounter = 0;
-    loveCheck = true;
+    partnerCheck = true;
     moodPic = "lib/Assets/Emotions/Happy.png";
     requests = [];
     friends = [];

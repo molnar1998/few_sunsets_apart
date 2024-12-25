@@ -63,11 +63,11 @@ class _LoadingPageState extends State<LoadingPage> {
       String? displayName = user.displayName; // User's display name, if set
       String? photoURL = user.photoURL; // User's profile picture URL, if set
 
-      UserData.updateID(user.uid);
+      UserData.updateID(uid);
+      UserData.updateName(displayName!);
       UserData.updateRequests(await _dataFetcher.retrieveData(user.uid, 'request'));
       UserData.updateMoodPic(await _dataFetcher.retrieveData(user.uid, "mood_pic"));
       UserData.updateMood(await _dataFetcher.retrieveData(user.uid, "mood"));
-      UserData.updateName(user.displayName!);
       UserData.updateCounter(await _dataFetcher.retrieveData(user.uid, "miss_counter"));
       UserData.updateFriends(await _dataFetcher.retrieveFriends(UserData.id));
 
