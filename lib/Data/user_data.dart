@@ -48,7 +48,9 @@ class UserData {
   }
 
   static void updateRequests(var newRequests){
-    requests = newRequests;
+    if(newRequests != null){
+      requests = newRequests;
+    }
   }
 
   static Future<void> updateFriends(List<QueryDocumentSnapshot<Map<String, dynamic>>> newFriends) async {

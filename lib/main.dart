@@ -1,3 +1,4 @@
+import 'package:dart_openai/dart_openai.dart';
 import 'package:few_sunsets_apart/Data/firebase_messaging_service.dart';
 import 'package:few_sunsets_apart/Pages/add_memory_page.dart';
 import 'package:few_sunsets_apart/Pages/calendar_page.dart';
@@ -5,7 +6,9 @@ import 'package:few_sunsets_apart/Pages/emotion_page.dart';
 import 'package:few_sunsets_apart/Pages/loading_page.dart';
 import 'package:few_sunsets_apart/Pages/memory_page.dart';
 import 'package:few_sunsets_apart/Pages/sign_up_page.dart';
+import 'package:few_sunsets_apart/Pages/view_memories.dart';
 import 'package:few_sunsets_apart/Pages/visa_page.dart';
+import 'package:few_sunsets_apart/env/env.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -28,6 +31,7 @@ void main() async {
   );
   await dotenv.load();
   FirebaseMessagingService().initialize();
+  OpenAI.apiKey = Env.apiKey;
   runApp(const MyApp());
 }
 
@@ -56,6 +60,7 @@ class MyApp extends StatelessWidget {
         '/addMemory' : (context) => const AddMemoryPage(),
         '/signUp' : (context) => const SignUpPage(),
         '/loading' : (context) => const LoadingPage(homePage: HomePage()),
+        '/viewMemory' :(context) => const ViewMemories(),
         '/visa' : (context) => VisaPage(),
       },
     );

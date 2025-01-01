@@ -9,7 +9,26 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class AddMemoryPage extends StatefulWidget {
-  const AddMemoryPage({super.key});
+  final String title;
+  final String description;
+  final String imagePath;
+  final String memoryId;
+  final int mYear;
+  final int mMonth;
+  final int mDay;
+  final bool isEdit;
+
+  const AddMemoryPage({
+    super.key,
+    this.title = "",
+    this.description = "",
+    this.imagePath = "",
+    this.memoryId = "",
+    this.mYear = 2023,
+    this.mMonth = 05,
+    this.mDay = 30,
+    this.isEdit = false
+  });
 
   @override
   State<StatefulWidget> createState() => AddMemoryPageState();
@@ -19,8 +38,8 @@ class AddMemoryPage extends StatefulWidget {
 class AddMemoryPageState extends State<AddMemoryPage> {
   final storageRef = FirebaseStorage.instance.ref();
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
+  TextEditingController _titleController = TextEditingController();
+  TextEditingController _descriptionController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   FilePickerResult? result;
   DateTime selectedDate = DateTime.now();
@@ -36,50 +55,67 @@ class AddMemoryPageState extends State<AddMemoryPage> {
   }
 
   Future<void> _saveMemory() async {
-    var now = Timestamp.now();
-    memID = "$userID ${now.toDate().toString()}";
-    if(result != null){
-      var i = 0;
-      for(var file in result!.files){
-        await FirebaseStorage.instance.ref("memories/$memID/$i").putFile(File(file.path!));
-        i++;
+    if(widget.isEdit){
+      var now = Timestamp.now();
+      if(result != null) {
+        var i = 0;
+        for (var file in result!.files) {
+          await FirebaseStorage.instance.ref("${widget.imagePath}/$i").putFile(File(file.path!));
+          i++;
+        }
       }
-      Memory newMemory = Memory(
-        imagePath: "memories/$memID/",
-        text: _descriptionController.text,
-        title: _titleController.text,
-        date: selectedDate,
-        createdAt: now,
-      );
+        Memory newMemory = Memory(
+          imagePath: widget.imagePath,
+          text: _descriptionController.text,
+          title: _titleController.text,
+          date: selectedDate,
+          createdAt: now,
+        );
+        await _firestore
+            .collection('memories').doc(userID)
+            .collection('memory').doc(widget.memoryId).set(newMemory.toMap());
 
-      await _firestore
-          .collection('memories').doc(userID)
-          .collection('memory').add(newMemory.toMap());
     } else {
-      Memory newMemory = Memory(
-        imagePath: "memories/$memID/",
-        text: _descriptionController.text,
-        title: _titleController.text,
-        date: selectedDate,
-        createdAt: now,
-      );
+      var now = Timestamp.now();
+      memID = "$userID ${now.toDate().toString()}";
+      if(result != null) {
+        var i = 0;
+        for (var file in result!.files) {
+          await FirebaseStorage.instance.ref("memories/$memID/$i").putFile(File(file.path!));
+          i++;
+        }
+      }
+        Memory newMemory = Memory(
+          imagePath: "memories/$memID/",
+          text: _descriptionController.text,
+          title: _titleController.text,
+          date: selectedDate,
+          createdAt: now,
+        );
 
-      await _firestore
-          .collection('memories').doc(userID)
-          .collection('memory').add(newMemory.toMap());
+        await _firestore
+            .collection('memories').doc(userID)
+            .collection('memory').add(newMemory.toMap());
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if(widget.isEdit){
+      _titleController = TextEditingController(text: widget.title);
+      _descriptionController = TextEditingController(text: widget.description);
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text("Save your memory!"),
         actions: [
-          IconButton(
-              onPressed: () =>
-              {Navigator.pushReplacementNamed(context, '/memories')},
-              icon: const Icon(Icons.arrow_back_ios_new))
+          Visibility(
+            visible: !widget.isEdit,
+            child: IconButton(
+                onPressed: () =>
+                {Navigator.pushReplacementNamed(context, '/memories')},
+                icon: const Icon(Icons.arrow_back_ios_new)),
+          )
         ],
       ),
       body: Center(
@@ -122,7 +158,7 @@ class AddMemoryPageState extends State<AddMemoryPage> {
                 child: InputDatePickerFormField(
                   firstDate: DateTime(1900),
                   lastDate: DateTime(2999),
-                  initialDate: selectedDate,
+                  initialDate: DateTime(widget.mYear, widget.mMonth, widget.mDay),
                   onDateSubmitted: (time) {
                     setState(() {
                       selectedDate = time;
@@ -146,8 +182,8 @@ class AddMemoryPageState extends State<AddMemoryPage> {
                   },
                   controller: _descriptionController,
                   autocorrect: true,
-                  minLines: 10,
-                  maxLines: 20,
+                  minLines: 1,
+                  maxLines: 6,
                   decoration: InputDecoration(
                     labelText: 'Description',
                     border: OutlineInputBorder(),

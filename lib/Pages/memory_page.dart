@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:few_sunsets_apart/Data/firebase_servicev2.dart';
 import 'package:few_sunsets_apart/Data/user_data.dart';
+import 'package:few_sunsets_apart/Pages/add_memory_page.dart';
+import 'package:few_sunsets_apart/Pages/view_memories.dart';
 import 'package:few_sunsets_apart/Widgets/memory_card.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class MemoriesPage extends StatefulWidget {
@@ -77,13 +80,38 @@ class MemoriesPageState extends State<MemoriesPage> {
               title: data['title'],
               text: data['text'],
               onTap: () {
-
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => ViewMemories(
+                        title: data['title'],
+                        description: data['text'],
+                        imagePath: data['imagePath'],
+                      )
+                  )
+                );
               },
-              onDeleteMemory: () {
+              onDeleteMemory: () async {
                 _dataFetcher.deleteMemory(UserData.id, data['createdAt']);
+                var pictures = await FirebaseStorage.instance.ref(data['imagePath']).list();
+                for(var picture in pictures.items){
+                  picture.delete();
+                }
               },
               onEditMemory: () {
-
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => AddMemoryPage(
+                        title: data['title'],
+                        description: data['text'],
+                        imagePath: data['imagePath'],
+                        memoryId: document.id,
+                        mYear: data['date'].toDate().year,
+                        mMonth: data['date'].toDate().month,
+                        mDay: data['date'].toDate().day,
+                        isEdit: true,
+                      )
+                  )
+                );
               },
             ),
           ],
