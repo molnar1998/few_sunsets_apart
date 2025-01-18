@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Data/themNotifier.dart';
+import '../Data/user_data.dart';
 import '../Widgets/nav_bar.dart';
 import '../Data/page_control.dart';
 
@@ -12,11 +16,23 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
   bool _enableNotifications = true;
-  bool _darkModeEnabled = false;
+  bool _darkModeEnabled = UserData.darkMode;
   int currentPageIndex = PageControl.page;
 
   @override
+  initState() {
+    super.initState();
+  }
+
+  Future<void> _darkMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setBool('darkMode', _darkModeEnabled);
+    UserData.updateDarkMode(_darkModeEnabled);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
       body: Padding(
@@ -54,6 +70,8 @@ class _SettingPageState extends State<SettingPage> {
                 onChanged: (value) {
                   setState(() {
                     _darkModeEnabled = value;
+                    _darkMode();
+                    themeNotifier.toggleTheme();
                   });
                 },
               ),

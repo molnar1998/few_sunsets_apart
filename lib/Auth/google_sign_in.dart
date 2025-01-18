@@ -48,8 +48,7 @@ class GoogleSignInHelper {
   }
 
   void handleSignOut(BuildContext context) async {
-    await _googleSignIn.signOut();
-    await _auth.signOut();
+    _googleSignIn.signOut();
   }
 
   Future<void> _storeUID(String uid) async {

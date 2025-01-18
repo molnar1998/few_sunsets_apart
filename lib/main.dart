@@ -14,8 +14,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 
+import 'Components/themData.dart';
+import 'Data/themNotifier.dart';
 import 'Pages/home_page.dart';
 import 'Pages/login_page.dart';
 import 'Pages/messages_page.dart';
@@ -32,7 +36,13 @@ void main() async {
   await dotenv.load();
   FirebaseMessagingService().initialize();
   OpenAI.apiKey = Env.apiKey;
-  runApp(const MyApp());
+  var prefs = await SharedPreferences.getInstance();
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ThemeNotifier(prefs.getBool('darkMode') == false ? lightTheme : darkTheme),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -43,10 +53,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     //Check if the user is logged in
     final User? user = FirebaseAuth.instance.currentUser;
+    final themNotifier = Provider.of<ThemeNotifier>(context);
     String initialRoute = user != null ? '/loading' : '/login';
 
     return MaterialApp(
       navigatorKey: navigatorKey,
+      theme: themNotifier.currentTheme,
       initialRoute: initialRoute, // Set the initial route
       routes: {
         '/login': (context) => const LoginPage(),

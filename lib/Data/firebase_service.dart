@@ -23,7 +23,11 @@ class FirebaseService {
 
   Future<void> loadData() async {
     UserData.updateRequests(await _dataFetcher.retrieveData(UserData.id, 'request'));
-    UserData.updateFriends(await _dataFetcher.retrieveFriends(UserData.id));
+    await _dataFetcher.retrieveFriends(UserData.id).then((value){
+      if(value != null){
+        UserData.updateFriends(value);
+      }
+    });
     //TODO Make all data loading in the same time!
   }
 }

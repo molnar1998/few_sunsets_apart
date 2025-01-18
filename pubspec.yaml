@@ -57,6 +57,7 @@ dependencies:
   email_validator:
   envied: ^1.0.0
   dart_openai: ^5.1.0
+  shared_preferences:
 
 dev_dependencies:
   flutter_test:

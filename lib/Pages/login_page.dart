@@ -124,6 +124,7 @@ class _LoginPageState extends State<LoginPage> {
                           _emailPasswordAuth.signInWithEmailAndPassword(_emailController.text, _passwordController.text).then((value) {
                             if (value != null && value.user!.emailVerified) {
                               Navigator.pushReplacementNamed(context, '/loading');
+                              _showTextFields = !_showTextFields;
                             } else {
                               showDialog(
                                   context: context,

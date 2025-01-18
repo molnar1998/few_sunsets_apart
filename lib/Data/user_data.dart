@@ -7,6 +7,7 @@ class UserData {
   static String partnerName = '';
   static String mood = "Happy";
   static String moodPic = "lib/Assets/Emotions/Happy.png";
+  static var profilePic = "lib/Assets/Images/3.png";
   static String myLoveID = '';
   static String id = "";
   static int missCounter = 0;
@@ -14,14 +15,17 @@ class UserData {
   static var requests = [];
   static List<Map<String, dynamic>> friends = [];
   static int counter = 0;
+  static bool darkMode = false;
 
   // Setter method to update the user's name
   static void updateName(String newName) {
     name = newName;
   }
 
-  static void updateMood(String newMood) {
-    mood = newMood;
+  static void updateMood(var newMood) {
+    if(newMood != null){
+      mood = newMood;
+    }
   }
   static void updateID(String newId){
     id = newId;
@@ -43,8 +47,10 @@ class UserData {
     partnerCheck = check;
   }
 
-  static void updateMoodPic(String newMoodPic){
-    moodPic = newMoodPic;
+  static void updateMoodPic(var newMoodPic){
+    if(newMoodPic != null){
+      moodPic = newMoodPic;
+    }
   }
 
   static void updateRequests(var newRequests){
@@ -72,6 +78,16 @@ class UserData {
     }
   }
 
+  static void updateDarkMode(bool newValue){
+    darkMode = newValue;
+  }
+
+  static void updateProfilePic(var newProfilePic){
+    if(newProfilePic != null){
+      profilePic = newProfilePic;
+    }
+  }
+
   static void updateCounter(var newValue){
     counter = newValue;
   }
@@ -89,9 +105,11 @@ class UserData {
     missCounter = 0;
     partnerCheck = true;
     moodPic = "lib/Assets/Emotions/Happy.png";
+    profilePic = "lib/Assets/Images/3.png";
     requests = [];
     friends = [];
     counter = 0;
+    darkMode = false;
   }
 
 }
