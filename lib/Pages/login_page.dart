@@ -1,6 +1,4 @@
-import 'package:few_sunsets_apart/Data/user_data.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import '../Auth/email_sign_in.dart';
 import '../Auth/google_sign_in.dart';
 
@@ -82,6 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                                 if(value!.isEmpty) {
                                   return "Please enter your email address!";
                                 }
+                                return null;
                               },
                               decoration: const InputDecoration(
                                 labelText: 'Email',
@@ -97,6 +96,7 @@ class _LoginPageState extends State<LoginPage> {
                                 if(value!.isEmpty) {
                                   return "Please enter your password!";
                                 }
+                                return null;
                               },
                               decoration: const InputDecoration(
                                 labelText: 'Password',
@@ -122,42 +122,62 @@ class _LoginPageState extends State<LoginPage> {
                       } else {
                         if(_formKey.currentState!.validate()){
                           _emailPasswordAuth.signInWithEmailAndPassword(_emailController.text, _passwordController.text).then((value) {
-                            if (value != null && value.user!.emailVerified) {
+                            if(value == null && context.mounted) {
+                              showDialog(context: context, builder: (BuildContext context) => AlertDialog(
+                                title: const Text('Error'),
+                                content: const Text('Invalid email or password!'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context, 'Okay'),
+                                    child: const Text('Okay'),
+                                  ),
+                                ]
+                              ));
+                            }
+                            else if (value!.user!.emailVerified && context.mounted) {
                               Navigator.pushReplacementNamed(context, '/loading');
                               _showTextFields = !_showTextFields;
                             } else {
-                              showDialog(
+                              if(context.mounted) {
+                                showDialog(
                                   context: context,
-                                  builder: (BuildContext context) => AlertDialog(
-                                    title: const Text('Confirm your e-mail!'),
-                                    content: Text('Please before login confirm your e-mail!'),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context, 'Okay'),
-                                        child: const Text('Okay'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () async => {
-                                          await value?.user!.sendEmailVerification().whenComplete(() {
-                                            showDialog(
-                                                context: context,
-                                                builder: (BuildContext context) => AlertDialog(
-                                                  title: const Text('Confirm your e-mail!'),
-                                                  content: Text('A conformation e-mail is sent to your e-mail address!'),
-                                                  actions: <Widget>[
-                                                    TextButton(
-                                                      onPressed: () => Navigator.pop(context, 'Okay'),
-                                                      child: const Text('Okay'),
-                                                    ),
-                                                  ],
-                                                ));
-                                          }),
-                                        },
-                                        child: const Text('Resend'),
-                                      )
-                                    ],
-                                  )
-                              );
+                                  builder: (BuildContext context) =>
+                                    AlertDialog(
+                                      title: const Text('Confirm your e-mail!'),
+                                      content: Text('Please before login confirm your e-mail!'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context, 'Okay'),
+                                          child: const Text('Okay'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () async =>
+                                          {
+                                            await value.user!.sendEmailVerification().whenComplete(() {
+                                              if(context.mounted){
+                                                showDialog(
+                                                    context: context,
+                                                    builder: (BuildContext context) =>
+                                                    AlertDialog(
+                                                      title: const Text('Confirm your e-mail!'),
+                                                      content: Text('A conformation e-mail is sent to your e-mail address!'),
+                                                      actions: <Widget>[
+                                                        TextButton(
+                                                          onPressed: () => Navigator.pop(context, 'Okay'),
+                                                          child: const Text('Okay'),
+                                                        ),
+                                                      ],
+                                                    )
+                                                );
+                                              }
+                                            }),
+                                          },
+                                          child: const Text('Resend'),
+                                        )
+                                      ],
+                                    )
+                                );
+                              }
                             }
                           });
                         }
@@ -176,10 +196,9 @@ class _LoginPageState extends State<LoginPage> {
                       textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     onPressed: () {
-                      UserData.clearData();
                       _googleSignIn.signInWithGoogle().then((value) {
                         // If login is successful, navigate to the home page.
-                        if(value != null){
+                        if(context.mounted){
                           Navigator.pushReplacementNamed(context, '/loading');
                         }
                       });

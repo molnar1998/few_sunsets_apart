@@ -34,20 +34,20 @@ class _MessagePageState extends State<MessagePage> {
                 return StreamBuilder<String>(
                   stream: _firebaseMessagingService.getLastMessage(
                     _firebaseAuth.currentUser!.uid,
-                    friend['friendId'],
+                    friend.friendId,
                   ),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       // Show a loading text while waiting for the message
                       return ChatCard(
-                        friendName: friend['friendUId'],
+                        friendName: friend.friendUId,
                         lastMessage: 'Loading...',
                         onTap: () async {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => ChatPage(
-                                receiverUserName: friend['friendUId'],
-                                receiverUserID: friend['friendId'],
+                                receiverUserName: friend.friendUId,
+                                receiverUserID: friend.friendId,
                               ),
                             ),
                           );
@@ -56,14 +56,14 @@ class _MessagePageState extends State<MessagePage> {
                       );
                     } else if (snapshot.hasError) {
                       return ChatCard(
-                        friendName: friend['friendUId'],
+                        friendName: friend.friendUId,
                         lastMessage: 'Error loading message',
                         onTap: () async {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => ChatPage(
-                                receiverUserName: friend['friendUId'],
-                                receiverUserID: friend['friendId'],
+                                receiverUserName: friend.friendUId,
+                                receiverUserID: friend.friendId,
                               ),
                             ),
                           );
@@ -72,14 +72,14 @@ class _MessagePageState extends State<MessagePage> {
                       );
                     } else {
                       return ChatCard(
-                        friendName: friend['friendUId'],
+                        friendName: friend.friendUId,
                         lastMessage: snapshot.data ?? 'No message',
                         onTap: () async {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => ChatPage(
-                                receiverUserName: friend['friendUId'],
-                                receiverUserID: friend['friendId'],
+                                receiverUserName: friend.friendUId,
+                                receiverUserID: friend.friendId,
                               ),
                             ),
                           );

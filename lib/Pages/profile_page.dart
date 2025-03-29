@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:few_sunsets_apart/Data/firebase_servicev2.dart';
-import 'package:few_sunsets_apart/Data/page_control.dart';
 import 'package:few_sunsets_apart/Data/push_notification_service.dart';
 import 'package:few_sunsets_apart/Data/firebase_service.dart';
 import 'package:few_sunsets_apart/Data/user_data.dart';
@@ -171,13 +170,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 itemBuilder: (context, index) {
                   final friend = UserData.friends.elementAt(index);
                   return FriendCard(
-                      friendName: friend['friendUId'],
+                      friendName: friend.friendUId,
                       onSendMessage: () async {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                               builder: (context) => ChatPage(
-                                  receiverUserName: friend['friendUId'],
-                                  receiverUserID: friend['friendId'],
+                                  receiverUserName: friend.friendUId,
+                                  receiverUserID: friend.friendId,
                               ),
                           ),
                         );

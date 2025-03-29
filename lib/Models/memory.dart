@@ -6,6 +6,7 @@ class Memory {
   final String title;
   final DateTime date;
   final Timestamp createdAt;
+  final List<String> friends;
 
   Memory({
     required this.imagePath,
@@ -13,6 +14,7 @@ class Memory {
     required this.title,
     required this.date,
     required this.createdAt,
+    required this.friends,
   });
 
   Map<String, dynamic> toMap() {
@@ -22,6 +24,7 @@ class Memory {
       'title': title,
       'date' : date,
       'createdAt' : createdAt,
+      'friends' : friends
     };
   }
 

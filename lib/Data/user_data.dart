@@ -2,6 +2,8 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../Models/friend.dart';
+
 class UserData {
   static String name = '';
   static String partnerName = '';
@@ -13,7 +15,7 @@ class UserData {
   static int missCounter = 0;
   static bool partnerCheck = true;
   static var requests = [];
-  static List<Map<String, dynamic>> friends = [];
+  static List<Friend> friends = [];
   static int counter = 0;
   static bool darkMode = false;
 
@@ -60,15 +62,10 @@ class UserData {
   }
 
   static Future<void> updateFriends(List<QueryDocumentSnapshot<Map<String, dynamic>>> newFriends) async {
-    bool contain = false;
     if(newFriends.isNotEmpty){
       for(var friend in newFriends){
-         Map<String, dynamic> temp = friend.data();
-         for(var element in friends){
-           if(element['friendId'] == temp['friendId']){
-             contain = true;
-           }
-         }
+         Friend temp = Friend(friendId: friend['friendId'], friendUId: friend['friendUId'], timestamp: friend['timestamp']);
+         bool contain = friends.any((element) => element.friendId == temp.friendId);
          if(contain == false){
            friends.add(temp);
          } else {

@@ -5,6 +5,7 @@ import 'package:few_sunsets_apart/Pages/calendar_page.dart';
 import 'package:few_sunsets_apart/Pages/emotion_page.dart';
 import 'package:few_sunsets_apart/Pages/loading_page.dart';
 import 'package:few_sunsets_apart/Pages/memory_page.dart';
+import 'package:few_sunsets_apart/Pages/shared_memory_page.dart';
 import 'package:few_sunsets_apart/Pages/sign_up_page.dart';
 import 'package:few_sunsets_apart/Pages/view_memories.dart';
 import 'package:few_sunsets_apart/Pages/visa_page.dart';
@@ -69,11 +70,12 @@ class MyApp extends StatelessWidget {
         '/calendar' : (context) => const CalendarPage(),
         '/emotion' : (context) => const EmotionPage(),
         '/memories' : (context) => const MemoriesPage(),
-        '/addMemory' : (context) => const AddMemoryPage(),
+        '/addMemory' : (context) => AddMemoryPage(),
         '/signUp' : (context) => const SignUpPage(),
         '/loading' : (context) => const LoadingPage(homePage: HomePage()),
         '/viewMemory' :(context) => const ViewMemories(),
         '/visa' : (context) => VisaPage(),
+        '/sharedMemory' : (context) => const SharedMemoriesPage(),
       },
     );
   }

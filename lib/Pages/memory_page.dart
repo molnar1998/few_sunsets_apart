@@ -30,12 +30,32 @@ class MemoriesPageState extends State<MemoriesPage> {
       body: Center(
         child: Column(
           children: [
-            FloatingActionButton.extended(
-              onPressed: () => {
-                Navigator.pushReplacementNamed(context, '/addMemory'),
-              },
-              label: const Text("Add memories"),
-              icon: const Icon(Icons.add),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: ElevatedButton.icon(
+                      onPressed: () => {
+                        Navigator.pushReplacementNamed(context, '/addMemory'),
+                      },
+                      label: const Text("Add memories"),
+                      icon: const Icon(Icons.add),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: ElevatedButton.icon(
+                      onPressed: () => {
+                        Navigator.pushReplacementNamed(context, '/sharedMemory'),
+                      },
+                      label: const Text("Shared memories"),
+                      icon: const Icon(Icons.share),
+                    ),
+                  ),
+                ],
+              ),
             ),
             Expanded(
                 child: _buildMemoryList(),
@@ -108,6 +128,8 @@ class MemoriesPageState extends State<MemoriesPage> {
                         mYear: data['date'].toDate().year,
                         mMonth: data['date'].toDate().month,
                         mDay: data['date'].toDate().day,
+                        selectedFriends: (data['friends'] as List<dynamic>?)?.cast<String>() ?? [],
+                        createdAt: data['createdAt'],
                         isEdit: true,
                       )
                   )

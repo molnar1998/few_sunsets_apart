@@ -203,4 +203,13 @@ class FirebaseDataFetcher {
 
     return Snapshot;
   }
+
+  Stream<QuerySnapshot> getSharedMemories(String userId) {
+    // Step 1: Get all shared memories for the current user
+    var snapshot = _firestore
+        .collectionGroup('memory')
+        .where('friends', arrayContains: userId)
+        .snapshots();
+    return snapshot;
+  }
 }

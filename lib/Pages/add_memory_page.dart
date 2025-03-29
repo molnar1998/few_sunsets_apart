@@ -17,8 +17,10 @@ class AddMemoryPage extends StatefulWidget {
   final int mMonth;
   final int mDay;
   final bool isEdit;
+  final List<String> selectedFriends;
+  final Timestamp createdAt;
 
-  const AddMemoryPage({
+  AddMemoryPage({
     super.key,
     this.title = "",
     this.description = "",
@@ -27,8 +29,10 @@ class AddMemoryPage extends StatefulWidget {
     this.mYear = 2023,
     this.mMonth = 05,
     this.mDay = 30,
-    this.isEdit = false
-  });
+    this.isEdit = false,
+    List<String>? selectedFriends,
+    Timestamp? createdAt,
+  }) : selectedFriends = selectedFriends ?? [], createdAt = createdAt ?? Timestamp.now();
 
   @override
   State<StatefulWidget> createState() => AddMemoryPageState();
@@ -45,6 +49,7 @@ class AddMemoryPageState extends State<AddMemoryPage> {
   DateTime selectedDate = DateTime.now();
   String userID = UserData.id;
   String memID = "";
+  List<String> removedFriends = [];
 
   Future<void> _pickPictures() async {
     result = await FilePicker.platform.pickFiles(
@@ -54,9 +59,63 @@ class AddMemoryPageState extends State<AddMemoryPage> {
     );
   }
 
+  void _showAddPeopleDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text("Select Friends"),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: UserData.friends.map((friend) {
+                    bool isSelected = widget.selectedFriends.any((f) => f == friend.friendId);
+                    return CheckboxListTile(
+                      title: Text(friend.friendUId), // Access the name field
+                      value: isSelected,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          if (value == true) {
+                            widget.selectedFriends.add(friend.friendId);
+                            removedFriends.removeWhere((f) => f == friend.friendId);
+
+                          } else {
+                            widget.selectedFriends.removeWhere((f) => f == friend.friendId);
+                            removedFriends.add(friend.friendId);
+                          }
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context); // Close dialog without saving
+                  },
+                  child: Text("Cancel"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    print("Selected Friends: $widget.selectedFriends");
+                    Navigator.pop(context, widget.selectedFriends);
+                  },
+                  child: Text("Add"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   Future<void> _saveMemory() async {
     if(widget.isEdit){
-      var now = Timestamp.now();
+      var now = widget.createdAt;
       if(result != null) {
         var i = 0;
         for (var file in result!.files) {
@@ -64,17 +123,37 @@ class AddMemoryPageState extends State<AddMemoryPage> {
           i++;
         }
       }
+
         Memory newMemory = Memory(
           imagePath: widget.imagePath,
           text: _descriptionController.text,
           title: _titleController.text,
           date: selectedDate,
           createdAt: now,
+          friends: widget.selectedFriends
         );
         await _firestore
             .collection('memories').doc(userID)
             .collection('memory').doc(widget.memoryId).set(newMemory.toMap());
-
+        if(widget.selectedFriends.isNotEmpty){
+          for(var friendID in widget.selectedFriends){
+            // Check if the memory is already shared with the friend
+            if(!await _firestore.collection('memories').doc(friendID).collection('shared_memory').where('memoryId', isEqualTo: widget.memoryId).get().then((value) => value.docs.isNotEmpty)){
+              Map<String, dynamic> newSharedMemory = {'owner' : userID, 'memoryId' : widget.memoryId};
+              await _firestore.collection('memories').doc(friendID).collection('shared_memory').add(newSharedMemory);
+            }
+          }
+        }
+        // Remove the memory from the old friends
+        if(removedFriends.isNotEmpty){
+          for(var friendID in removedFriends){
+            await _firestore.collection('memories').doc(friendID).collection('shared_memory').where('memoryId', isEqualTo: widget.memoryId).get().then((value) {
+              for(var doc in value.docs){
+                doc.reference.delete();
+              }
+            });
+          }
+        }
     } else {
       var now = Timestamp.now();
       memID = "$userID ${now.toDate().toString()}";
@@ -91,11 +170,18 @@ class AddMemoryPageState extends State<AddMemoryPage> {
           title: _titleController.text,
           date: selectedDate,
           createdAt: now,
+          friends: widget.selectedFriends
         );
 
         await _firestore
             .collection('memories').doc(userID)
             .collection('memory').add(newMemory.toMap());
+        if(widget.selectedFriends.isNotEmpty){
+          for(var friendID in widget.selectedFriends){
+            Map<String, dynamic> newSharedMemory = {'owner' : userID, 'memoryId' : memID};
+            await _firestore.collection('memories').doc(friendID).collection('shared_memory').add(newSharedMemory);
+          }
+        }
     }
   }
 
@@ -121,18 +207,26 @@ class AddMemoryPageState extends State<AddMemoryPage> {
       body: Center(
         child: Form(
           key: _formKey,
-          child: Column(
+          child: ListView(
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: [
-                    FloatingActionButton.extended(
+                    ElevatedButton.icon(
                       onPressed: () {
                         _pickPictures();
                       },
                       label: Text("Add photos!"),
                       icon: Icon(Icons.photo),
+                    ),
+                    SizedBox(width: 10),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        _showAddPeopleDialog(context);
+                      },
+                      label: Text("Add people!"),
+                      icon: Icon(Icons.people),
                     ),
                   ],
                 ),
@@ -200,24 +294,40 @@ class AddMemoryPageState extends State<AddMemoryPage> {
                 ),
                 onPressed: () {
                   _formKey.currentState?.save();
+                  setState(() {
+                    showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Wait a moment!'),
+                          content: Column(mainAxisSize: MainAxisSize.min,children: [Text("Wait a moment while we save your memory!"),CircularProgressIndicator()],),
+                        )
+                    );
+                  });
                   if(_formKey.currentState!.validate()){
                     _saveMemory().whenComplete(() {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) => AlertDialog(
-                          title: const Text('Memory created!'),
-                          content: Text('Your ${_titleController.text} successfully created!'),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () => {
-                                Navigator.pop(context, 'Okay'),
-                                Navigator.pushReplacementNamed(context, '/memories')
-                              },
-                              child: const Text('Okay'),
-                            ),
-                          ],
-                        )
-                      );
+                      if(context.mounted){
+                        Navigator.pop(context, 'Wait a moment!');
+                        showDialog(
+                          context: context,
+                            barrierDismissible: false,
+                          builder: (BuildContext context) => AlertDialog(
+                            title: const Text('Memory created!'),
+                            content: Text('Your ${_titleController.text} successfully created!'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () => {
+                                  Navigator.pop(context, 'Okay'),
+                                  if(!widget.isEdit){
+                                    Navigator.pushReplacementNamed(context, '/memories')
+                                  }
+                                },
+                                child: const Text('Okay'),
+                              ),
+                            ],
+                          )
+                        );
+                      }
                     });
                   }
                 },
@@ -230,5 +340,4 @@ class AddMemoryPageState extends State<AddMemoryPage> {
       ),
     );
   }
-
 }
