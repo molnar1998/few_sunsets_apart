@@ -28,8 +28,7 @@ FutureOr<void> backgroundCallback(Uri? data) async {
     );
     if (Platform.isAndroid) {
       await HomeWidget.updateWidget(
-        qualifiedAndroidName:
-        'com.example.few_sunsets_apart.MissCounterWidgetReceiver',
+        qualifiedAndroidName: 'com.example.few_sunsets_apart.MissCounterWidgetReceiver',
       );
     }
   }
@@ -56,8 +55,7 @@ void callbackDispatcher() async {
         ),
         if (Platform.isAndroid)
           HomeWidget.updateWidget(
-            qualifiedAndroidName:
-            'com.example.few_sunsets_apart.MissCounterWidgetReceiver',
+            qualifiedAndroidName: 'com.example.few_sunsets_apart.MissCounterWidgetReceiver',
           ),
       ]);
       return !value.contains(false);
@@ -77,8 +75,7 @@ Future<void> interactiveCallback(Uri? data) async {
     );
     if (Platform.isAndroid) {
       await HomeWidget.updateWidget(
-        qualifiedAndroidName:
-        'com.example.few_sunsets_apart.MissCounterWidgetReceiver',
+        qualifiedAndroidName: 'com.example.few_sunsets_apart.MissCounterWidgetReceiver',
       );
     }
   }
@@ -95,20 +92,20 @@ class HomePageState extends State<HomePage> {
   int currentPageIndex = PageControl.page;
   Counter counter = Counter();
   var missCounter = 0;
-  var partnerName = "";
+  String partnerName = "";
   final FirebaseDataFetcher _dataFetcher = FirebaseDataFetcher();
   final GoogleSignInHelper _googleSignIn = GoogleSignInHelper();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  int c = 0;
 
   @override
   void initState() {
     super.initState();
+    counter.initCounter();
+    getMissCounterValue();
     HomeWidget.setAppGroupId('com.example.few_sunsets_apart');
     HomeWidget.registerInteractivityCallback(interactiveCallback);
     HomeWidget.registerInteractivityCallback(backgroundCallback);
   }
-
 
   Future _sendData(String id, String data) async {
     try {
@@ -137,8 +134,7 @@ class HomePageState extends State<HomePage> {
         ),
         if (Platform.isAndroid)
           HomeWidget.updateWidget(
-            qualifiedAndroidName:
-            'com.example.few_sunsets_apart.MissCounterWidgetReceiver',
+            qualifiedAndroidName: 'com.example.few_sunsets_apart.MissCounterWidgetReceiver',
           ),
       ]);
     } on PlatformException catch (exception) {
@@ -147,7 +143,7 @@ class HomePageState extends State<HomePage> {
   }
 
   Future<void> _sendAndUpdate(String id, String data) async {
-    await _sendData(id ,data);
+    await _sendData(id, data);
     await _updateWidget();
   }
 
@@ -188,15 +184,37 @@ class HomePageState extends State<HomePage> {
     }
   }
 
+  void getMissCounterValue() {
+    _dataFetcher.retrieveDataByUserName(UserData.partnerName, 'miss_counter').then((value) {
+      if (value != null) {
+        setState(() {
+          UserData.missCounter = value[UserData.name] ?? 0;
+        });
+      }
+    });
+  }
+
+  void getCounterValue() {
+    _dataFetcher.retrieveData(UserData.id, 'miss_counter').then((value) {
+      if (value != null) {
+        setState(() {
+          UserData.counter = value[UserData.partnerName] ?? 0;
+          Counter.counter = UserData.counter;
+          _sendAndUpdate('appwidget_text', Counter.counter.toString());
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var now = DateTime.now();
     var displayName = UserData.name;
     var formattedDate = DateFormat('MMMM dd, yyyy').format(now);
-    counter.initCounter();
-    c = counter.getCounter();
+    //counter.initCounter();
+    String? selectedFriend = "";
 
-    if(UserData.partnerCheck == true){
+    if (UserData.partnerCheck == true) {
       _dataFetcher.retrieveData(UserData.id, 'partner_id').then((value) {
         if (value != null) {
           print('myLoveID: $value');
@@ -225,27 +243,81 @@ class HomePageState extends State<HomePage> {
       partnerName = UserData.partnerName;
       missCounter = UserData.missCounter;
       _dataFetcher.retrieveData(UserData.id, "mood_pic").then((value) {
-        if(value != null){
+        if (value != null) {
           setState(() {
             UserData.updateMoodPic(value);
           });
         }
       });
     }
+    // Select partner for sending hearts
+    void showAddPeopleDialog(BuildContext context) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return AlertDialog(
+                title: Text("Select Friend"),
+                content: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: UserData.friends.map((friend) {
+                      return RadioListTile(
+                        title: Text(friend.friendUId),
+                        value: friend.friendUId,
+                        groupValue: selectedFriend,
+                        onChanged: (String? value) {
+                          setState(() {
+                            selectedFriend = value;
+                            print(selectedFriend);
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context); // Close dialog without saving
+                    },
+                    child: Text("Cancel"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        UserData.partnerName = selectedFriend!;
+                        Navigator.pop(context, selectedFriend);
+                        getMissCounterValue();
+                        getCounterValue();
+                        print("Selected Friends: $selectedFriend");
+                      });
+                    },
+                    child: Text("Select"),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 250,
-        title:  Text(
+        title: Text(
           "👋Hi $displayName,",
-          style: const TextStyle(
-              fontSize: 24, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         actions: [
           PopupMenuButton<String>(
             offset: const Offset(-30, 80),
             child: CircleAvatar(
-              backgroundImage: UserData.profilePic == "lib/Assets/Images/3.png" ? AssetImage("lib/Assets/Images/3.png") : Image.network(UserData.profilePic).image, // Replace with your image
+              backgroundImage: UserData.profilePic == "lib/Assets/Images/3.png"
+                  ? AssetImage("lib/Assets/Images/3.png")
+                  : Image.network(UserData.profilePic).image, // Replace with your image
               radius: 40, // Adjust the size as needed
             ),
             onSelected: (value) {
@@ -271,10 +343,7 @@ class HomePageState extends State<HomePage> {
                   value: 'logout',
                   child: Text('Log Out'),
                 ),
-                const PopupMenuItem<String>(
-                  value: 'visa',
-                  child: Text('Visa info')
-                ),
+                const PopupMenuItem<String>(value: 'visa', child: Text('Visa info')),
               ];
             },
           ),
@@ -282,13 +351,14 @@ class HomePageState extends State<HomePage> {
             width: 20,
           ),
         ],
-        titleTextStyle:
-            const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        titleTextStyle: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         elevation: 0, // Remove the shadow
       ),
       body: Column(
         children: [
-          const SizedBox(height: 20,),
+          const SizedBox(
+            height: 20,
+          ),
           Expanded(
             child: GridView.count(
               crossAxisCount: 2,
@@ -306,7 +376,10 @@ class HomePageState extends State<HomePage> {
                   child: const Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.photo_size_select_actual_outlined,size: 100,),
+                      Icon(
+                        Icons.photo_size_select_actual_outlined,
+                        size: 100,
+                      ),
                       SizedBox(height: 4), // Adjust the spacing as needed
                       Text('Memories'),
                     ],
@@ -320,7 +393,10 @@ class HomePageState extends State<HomePage> {
                   child: const Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.calendar_month,size: 100,),
+                      Icon(
+                        Icons.calendar_month,
+                        size: 100,
+                      ),
                       SizedBox(height: 4), // Adjust the spacing as needed
                       Text('Calendar'),
                     ],
@@ -340,28 +416,43 @@ class HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),
-                FloatingActionButton(
-                  onPressed: () {
-                    setState(() {
-                      counter.incrementCounter();
-                      c = counter.getCounter();
-                      _sendAndUpdate('appwidget_text',c.toString());
-                      //_getInstalledWidgets();
-                      debugPrint("Pressed!");
-                    });
+                InkWell(
+                  splashColor: Colors.blue,
+                  onLongPress: () {
+                    showAddPeopleDialog(context);
                   },
-                  heroTag: "btn4",
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text('$partnerName miss me $missCounter times :3', textAlign: TextAlign.center,style: const TextStyle(fontWeight: FontWeight.bold),),
-                      ),
-                      const Icon(Icons.favorite,size: 100,),
-                      const SizedBox(height: 4), // Adjust the spacing as needed
-                      Text('I miss you $c'),
-                    ],
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      setState(() {
+                        if (UserData.partnerName.isEmpty) {
+                          showAddPeopleDialog(context);
+                        } else {
+                          counter.incrementCounter(UserData.partnerName);
+                          _sendAndUpdate('appwidget_text', Counter.counter.toString());
+                          //_getInstalledWidgets();
+                        }
+                      });
+                    },
+                    heroTag: "btn4",
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            '${UserData.partnerName} miss me ${UserData.missCounter} times :3',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        const Icon(
+                          Icons.favorite,
+                          size: 100,
+                        ),
+                        const SizedBox(height: 4), // Adjust the spacing as needed
+                        Text('I miss you ${Counter.counter}'),
+                      ],
+                    ),
                   ),
                 ),
               ],

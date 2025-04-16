@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:few_sunsets_apart/Data/firebase_servicev2.dart';
 import 'package:few_sunsets_apart/Data/user_data.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 
@@ -58,6 +59,13 @@ class CalendarPageState extends State<CalendarPage> {
               view: CalendarView.schedule,
               showDatePickerButton: true,
               dataSource: _AppointmentDataSource(appointments),
+              onTap: (CalendarTapDetails details) {
+                CalendarElement element = details.targetElement;
+                List? appointment = details.appointments;
+                if (kDebugMode) {
+                  print(appointment?.first.subject);
+                }
+              }
             );
           }
         },

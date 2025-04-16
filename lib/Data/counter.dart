@@ -6,24 +6,16 @@ class Counter {
   final FirebaseDataFetcher _dataFetcher = FirebaseDataFetcher();
   static int counter = 0;
 
-  void incrementCounter(){
+  void incrementCounter(String partnerUid){
     counter++;
-    _dataFetcher.saveData(UserData.id, "miss_counter", counter);
+    _dataFetcher.saveData(UserData.id, "miss_counter", {partnerUid : counter});
+
   }
 
   void initCounter() async {
-    // Try to retrieve the data from Firebase
-    final retrievedValue = await _dataFetcher.retrieveData(UserData.id, 'miss_counter');
-
-    // Check if the data exists
-    if (retrievedValue != null) {
-      counter = retrievedValue;
-    } else {
-      // If data doesn't exist, set counter to default (0) and save it to Firebase
-      counter = 0;
-      await _dataFetcher.saveData(UserData.id, 'miss_counter', counter);
-    }
+    counter = UserData.counter;
   }
+
   int getCounter() => counter;
 
   void deleteCounter(){

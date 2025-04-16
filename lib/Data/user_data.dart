@@ -85,11 +85,16 @@ class UserData {
     }
   }
 
-  static void updateCounter(var newValue){
-    counter = newValue;
+  static void initCounter(Map<String, dynamic> ?newValue){
+    if(newValue != null){
+      counter = newValue[UserData.friends.first.friendUId];
+      partnerName = UserData.friends.first.friendUId;
+    } else {
+      counter = 0;
+    }
   }
 
-  static void incrementCounter() {
+  static void incrementCounter(String partnerUid) {
     counter++;
   }
 

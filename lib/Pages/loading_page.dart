@@ -27,6 +27,9 @@ class _LoadingPageState extends State<LoadingPage> {
   double _progressValue = 0;
   double _progressDisplay = 0;
   bool _isLoading = true;
+  bool _haveError = false;
+  String _errorMessage = "";
+
 
   @override
   void initState() {
@@ -36,24 +39,33 @@ class _LoadingPageState extends State<LoadingPage> {
 
   Future<void> _initialize() async {
     try {
-      // Simulate async tasks and update progress
-      for (int i = 0; i <= 100; i++) {
-        await Future.delayed(Duration(milliseconds: 10));
-        setState(() {
-          _progressValue = i / 100;
-          _progressDisplay = _progressValue * 100;
-        });
-      }
-
       // Perform your async tasks here
       await getCurrentUserData();
-    } catch (e) {
+    } catch (e, stackTrace) {
       // Handle errors here
-      print('Error during initialization: $e');
+      print('Error during initialization: $stackTrace');
+      _haveError = true;
+      _errorMessage = e.toString();
+
     } finally {
       setState(() {
         _isLoading = false;
-        Navigator.pushReplacementNamed(context, '/home');
+        if (_haveError) {
+          _haveError = false;
+          Navigator.pushReplacementNamed(context, '/login');
+          showDialog(context: context, builder: (BuildContext context){
+            return StatefulBuilder(
+                builder: (context, setState){
+                  return AlertDialog(
+                    title: Text("Error"),
+                    content: Text(_errorMessage),
+                  );
+                }
+            );
+          });
+        } else {
+          Navigator.pushReplacementNamed(context, '/home');
+        }
       });
     }
   }
@@ -69,14 +81,38 @@ class _LoadingPageState extends State<LoadingPage> {
       String? photoURL = user.photoURL; // User's profile picture URL, if set
 
       UserData.updateID(uid);
+      setState(() {
+        _progressDisplay += 10;
+        _progressValue += 0.1;
+      });
       UserData.updateRequests(await _dataFetcher.retrieveData(user.uid, 'request'));
+      setState(() {
+        _progressDisplay += 10;
+        _progressValue += 0.1;
+      });
       UserData.updateMoodPic(await _dataFetcher.retrieveData(user.uid, "mood_pic"));
+      setState(() {
+        _progressDisplay += 10;
+        _progressValue += 0.1;
+      });
       UserData.updateMood(await _dataFetcher.retrieveData(user.uid, "mood"));
-      UserData.updateCounter(await _dataFetcher.retrieveData(user.uid, "miss_counter"));
+      setState(() {
+        _progressDisplay += 10;
+        _progressValue += 0.1;
+      });
       await _dataFetcher.retrieveFriends(UserData.id).then((value){
         if(value != null){
           UserData.updateFriends(value);
         }
+      });
+      setState(() {
+        _progressDisplay += 10;
+        _progressValue += 0.1;
+      });
+      UserData.initCounter(await _dataFetcher.retrieveData(user.uid, "miss_counter"));
+      setState(() {
+        _progressDisplay += 10;
+        _progressValue += 0.1;
       });
 
       await _dataFetcher.retrieveData(user.uid, "user_name").then((value) async {
@@ -93,10 +129,31 @@ class _LoadingPageState extends State<LoadingPage> {
           UserData.updateName(await _dataFetcher.retrieveData(user.uid, "user_name"));
         }
       });
+      setState(() {
+        _progressDisplay += 10;
+        _progressValue += 0.1;
+      });
 
       var prefs = await SharedPreferences.getInstance();
-      UserData.updateDarkMode(prefs.getBool("darkMode") ?? false);
-      UserData.updateProfilePic(FirebaseStorage.instance.ref(UserData.id).fullPath != UserData.id ? "lib/Assets/Images/3.png" : await FirebaseStorage.instance.ref(UserData.id).getDownloadURL());
+      var darkMode = prefs.getBool("darkMode");
+      setState(() {
+        _progressDisplay += 10;
+        _progressValue += 0.1;
+      });
+      UserData.updateDarkMode(darkMode ?? false);
+      setState(() {
+        _progressDisplay += 10;
+        _progressValue += 0.1;
+      });
+      try{
+        UserData.updateProfilePic(await FirebaseStorage.instance.ref(UserData.id).getDownloadURL());
+      } catch(e){
+        UserData.updateProfilePic("lib/Assets/Images/3.png");
+      }
+      setState(() {
+        _progressDisplay += 10;
+        _progressValue += 0.1;
+      });
 
 
       print("User UID: $uid");
